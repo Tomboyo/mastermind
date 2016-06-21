@@ -5,6 +5,8 @@ The original draft of this program was developed by Tom Simmons (tomasimmons@gma
 The program as presented on Git is a refactored version of the original code (it's more readable) that was used for research purposes. The program does not yet fully mirror the original design's capabilities (heuristics have not yet been implemented to improve algorithm speed). This draft aims to be as extensible and intelligible as possible while maintaining as much performance as can be wrangled.
 
 #####Basic Usage
+To compile: navigate to the src/ folder and run `javac -d ../bin main/*.java`. This will populate the bin/main/ folder with class files.
+
 In the future, a Mastermind.java source file will be available demonstrating the implementation of the API. Currently, the program is run by instantiating a `Tree` object with a given number of pegs and colors, then calling its `compute` member. This method takes an optional boolean `log` parameter to inform the algorithm whether or not a complete print-out of the game is desired; if not, the algorithm will only output the minimum number of turns necessary to play the game regardless of what the master code was. The `compute` method directly returns turns to win. After computation, the game log can be accessed via `root.getGameTree().displayGameLog()` provided the `log` flag was set.
 
 #####Interpreting Output
