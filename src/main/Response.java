@@ -5,16 +5,7 @@ import java.util.Arrays;
 class Response extends Code {
   
   public Response(int[] code) {
-    this.code = code;
-  }
-  
-  @Override
-  public boolean equals(Object o) {
-    if (o == this) return true;
-    if (o == null) return false;
-    if (this.getClass() != o.getClass()) return false;
-    
-    return Arrays.equals(this.code, ((Response)o).code);
+    super(code.clone());
   }
   
   @Override
@@ -24,5 +15,14 @@ class Response extends Code {
       sum = sum * 10 + this.code[i];
     }
     return sum;
+  }
+  
+  @Override
+  public final boolean equals(Object other) {
+    if (other == this) return true;
+    if (other == null) return false;
+    if (this.getClass() != other.getClass()) return false;
+    
+    return Arrays.equals(this.code, ((Response)other).code);
   }
 }

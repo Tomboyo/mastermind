@@ -3,8 +3,8 @@ import java.util.Arrays;
 
 class Key extends Code {
   
-  public Key(int[] c) {
-    this.code = c.clone();
+  public Key(int[] code) {
+    super(code.clone());
   }
   
   /*

@@ -242,7 +242,7 @@ class Tree {
   
 
   public static void main(String[] args) {
-    Tree root = new Tree(3, 2);
+    Tree root = new Tree(2, 2);
     root.compute(true);
     
     System.out.println(root.length() + "\n");

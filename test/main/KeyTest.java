@@ -1,25 +1,37 @@
 package main;
 
 import static org.junit.Assert.*;
-
-import java.util.Arrays;
-
 import org.junit.Test;
 
-public class KeyTest {
+public class KeyTest extends CodeTest {
 
+  // Factory method implementation
+  @Override
+  public Code createCode(int[] code) {
+    return new Key(code);
+  }
+  
   @Test
   public void testKey() {
-    assertNotNull(new Key(new int[]{}));
+    assertNotNull(new Key(new int[]{1}));
+    
+    int[][] parameters = new int[][]{
+      null,
+      new int[]{}
+    };
+    
+    for (int[] code : parameters) {
+      try {
+        new Key(code);
+        fail("Constructor should throw.");
+      } catch (Exception e) {
+      }
+    }
   }
 
   @Test
   public void testGetFeedbackFromKey() {
     Object[][] parameters = new Object[][]{
-      //Empty Equality
-      new Object[]{
-          new int[]{}, new int[]{}, new int[]{}
-      },
       // Equality
       new Object[]{
           new int[]{1}, new int[]{1}, new int[]{2}
@@ -53,10 +65,7 @@ public class KeyTest {
       },
       new Object[]{
           new int[]{1, 1, 1}, new int[]{2}  // Unequal lengths, differing elements
-      },
-      new Object[]{
-          new int[]{}, new int[]{1, 1, 1}   // Unequal lengths
-      },
+      }
     };
     
     for (Object[] set : parameters) {
@@ -67,8 +76,8 @@ public class KeyTest {
         Response correctFeedback = new Response((int[])set[2]);
         
         // Assumes that the ResponseTest class has passed for testEquals()
-        assertEquals(correctFeedback, key1.getFeedbackFromKey(key2));
-        assertEquals(correctFeedback, key2.getFeedbackFromKey(key1));
+        assertEquals(true, correctFeedback.equals(key1.getFeedbackFromKey(key2)));
+        assertEquals(true, correctFeedback.equals(key2.getFeedbackFromKey(key1)));
       } else {
         try{
           key1.getFeedbackFromKey(key2);
@@ -81,16 +90,12 @@ public class KeyTest {
           }
         }
       }
-      
     }
   }
-
+  
   @Test
   public void testEqualsCode() {
     Object[][] parameters = new Object[][]{
-      new Object[]{
-          new int[]{}, new int[]{}, true
-      },
       new Object[]{
           new int[]{1}, new int[]{1}, true
       },
@@ -114,44 +119,12 @@ public class KeyTest {
       
       assertEquals(true, key1.equals(key1));
       assertEquals(true, key2.equals(key2));
+  
       assertEquals((boolean)set[2], key1.equals(key2));
       assertEquals((boolean)set[2], key2.equals(key1));
       
       assertEquals(true, key1.equals(new Key((int[])set[0])));
       assertEquals(true, key2.equals(new Key((int[])set[1])));
-    }
-  }
-
-  @Test
-  public void testLength() {
-    int[][] parameters = new int[][]{
-      new int[]{},
-      new int[]{1},
-      new int[]{1, 2},
-      new int[]{1, 1},
-      new int[]{1, 2, 3},
-      new int[]{1, 1, 1}
-    };
-    
-    for (int[] code : parameters) {
-      Key key = new Key(code);
-      assertEquals(code.length, key.length());
-    }
-  }
-
-  @Test
-  public void testToString() {
-    int[][] parameters = new int[][]{
-      new int[]{},
-      new int[]{1},
-      new int[]{1, 2},
-      new int[]{1, 1},
-      new int[]{1, 2, 3},
-      new int[]{1, 1, 1}
-    };
-    
-    for (int[] code : parameters) {
-      assertEquals(Arrays.toString(code), (new Key(code)).toString());
     }
   }
 
