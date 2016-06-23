@@ -14,7 +14,11 @@ class Key extends Code {
    * 2 = peg in correct place, 1 = peg out of place, 0 = no feedback
    * Response pegs sorted in descending order (e.g, [2,2,2,1,1,0,0,0])
    */
-  public Response getFeedbackFromKey(Key key) {
+  public Response getFeedbackFromKey(Key key) throws IllegalArgumentException {
+    if (key.code.length != this.code.length) {
+      throw new IllegalArgumentException("Length of Key codes are unequal.");
+    }
+    
     // 0:x 1:w 2:r
     int[] response = new int[code.length];
     boolean[] gmask = new boolean[code.length];
