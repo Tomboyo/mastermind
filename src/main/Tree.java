@@ -6,10 +6,10 @@ import java.util.Map.Entry;
 
 // TODO: Research Future thread?
 class Tree {
-  int length;
-  Key[] allKeys;
-  Response correctResponse;  
-  Node gameTree;
+  private int length;
+  private Key[] allKeys;
+  private Response correctResponse;  
+  private Node gameTree;
   
   Tree (int colors, int pegs) {
     length = -1;
@@ -201,10 +201,10 @@ class Tree {
   /*
    * Record of moves made in a game evaluation.
    */
-  private class Node {
-    Key guess;
-    Response response;
-    Node[] children;
+  class Node {
+    private Key guess;
+    private Response response;
+    private Node[] children;
     
     public Node() {}
     
@@ -239,15 +239,6 @@ class Tree {
             : response.toString()));
     }
   }
-  
 
-  public static void main(String[] args) {
-    Tree root = new Tree(2, 2);
-    root.compute(true);
-    
-    System.out.println(root.length() + "\n");
-    
-    root.getGameTree().displayGameLog();
-  }
 }
 
