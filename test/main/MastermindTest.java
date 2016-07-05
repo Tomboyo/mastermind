@@ -39,7 +39,7 @@ public class MastermindTest {
   @Test
   public void testGetUsage() {
     mastermind = new Mastermind(5, 4, false);
-    assertEquals("Mastermind <int colors> <int pegs> [<boolean verbose?=false>]", mastermind.getUsage());
+    assertEquals("Usage: Mastermind <int colors> <int pegs> [<boolean verbose?=false>]", mastermind.getUsage());
   }
   
   /**
