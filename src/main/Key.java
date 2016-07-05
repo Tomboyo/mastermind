@@ -51,7 +51,7 @@ class Key extends Code {
     return new Response(response); 
   }
   
-  public boolean equals(Code other) {
+  public boolean equals(Key other) {
     return Arrays.equals(this.code, other.code);
   }
 }
