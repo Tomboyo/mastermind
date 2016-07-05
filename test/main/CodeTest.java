@@ -6,11 +6,19 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
+/**
+ * Extended by ResponseTest and KeyTest
+ */
 public abstract class CodeTest {
 
-  // Factory method
+  /**
+   * Factory method for creating Codes (Response, Key)
+   */
   public abstract Code createCode(int[] code);
   
+  /**
+   * Get the length of a Code
+   */
   @Test
   public void testLength() {
     int[][] parameters = new int[][]{
@@ -22,10 +30,14 @@ public abstract class CodeTest {
     };
     
     for (int[] code : parameters) {
-      assertEquals(code.length, createCode(code).length());
+      assertEquals("Code returned incorrect length", code.length, createCode(code).length());
     }
   }
   
+  /**
+   * Get the int[] used to instantiate a Code
+   * int[]{1, 2, 3, 4} represents four pegs of different colors
+   */
   @Test
   public void testGetCode() {
     int[] code = new int[]{1, 2, 3, 4, 5};

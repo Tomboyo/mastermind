@@ -6,12 +6,24 @@ import org.junit.Test;
 
 public class ResponseTest extends CodeTest {
 
-  // Factory method implementation
+  /**
+  * Override the Code factory method so that CodeTest's methods will test functionality of Keys
+  */
   @Override
   public Code createCode(int[] code) {
     return new Response(code);
   }
 
+  /**
+   * Responses must be instantiated with a non-empty int[] representing the feedback from a guess code.
+   * new Response(new int[]{1, 1, 2, 2} generates a four-peg Response.
+   * Response pegs should be numbered 0, 1, or 2.
+   * 2 indicates a peg in a guess code was correctly placed,
+   * 1 indicates a peg in a guess code was in the wrong position, and
+   * 0 indicates no particular feedback (this peg of the response says nothing)
+   * Note that Responses should have pegs ordered in descending number: 2, 2, 1, 0, 0
+   * Responses code format corresponds to traditional mastermind rules.
+   */
   @Test
   public void testResponse() {
     assertNotNull(new Key(new int[]{1}));
@@ -30,8 +42,14 @@ public class ResponseTest extends CodeTest {
     }
   }
 
+  /**
+   * A response's hash code is the concatenation of its code.
+   * Ex: new Response(new int[]{2, 2, 1,0}) should hash to 2210
+   * This is used to key Hashtables in Tree.java
+   */
   @Test
   public void testHashCode() {
+    // response, expected hash code
     Object[][] parameters = new Object[][]{
       new Object[]{ new int[]{1}, 1},
       new Object[]{ new int[]{1, 2}, 12},
@@ -40,6 +58,7 @@ public class ResponseTest extends CodeTest {
       new Object[]{ new int[]{1, 1, 1}, 111}
     };
 
+    
     for (Object[] set : parameters) {
       Response r1 = new Response((int[])set[0]);
       Response r2 = new Response((int[])set[0]);
@@ -52,8 +71,13 @@ public class ResponseTest extends CodeTest {
     }
   }
   
+  /*
+   * Verify that two responses are considered equal if their pegs match (by length and color)
+   * Tests Object.equals(Object) to ensure Hashtables will work correctly
+   */
   @Test
   public void testEqualsCode() {
+    // response1, response2, expected equal?
     Object[][] parameters = new Object[][]{
       new Object[]{
           new int[]{1}, new int[]{1}, true
@@ -72,21 +96,23 @@ public class ResponseTest extends CodeTest {
       }
     };
     
-    // Equality must be tested at the Object level in order to ensure that Hashtables will behave correctly
     for (Object[] set : parameters) {
       Object response1 = new Response((int[])set[0]);
       Object response2 = new Response((int[])set[1]);
       
+      // Equals itself
       assertEquals(true, response1.equals(response1));
       assertEquals(true, response2.equals(response2));
   
+      // Reflexive
       assertEquals((boolean)set[2], response1.equals(response2));
       assertEquals((boolean)set[2], response2.equals(response1));
       
-      // Verify that the hashcode complies with object equality
+      // Verify that the hashcode corresponds to object equality
       assertEquals((boolean)set[2], response1.hashCode() == response2.hashCode());
       assertEquals((boolean)set[2], response2.hashCode() == response1.hashCode());
 
+      // Response is equal to a copy of itself, as well.
       assertEquals(true, response1.equals(new Response((int[])set[0])));
       assertEquals(true, response2.equals(new Response((int[])set[1])));
     }
