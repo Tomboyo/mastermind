@@ -54,8 +54,22 @@ public class Code {
 		return new Response(response); 
 	}
 
-	public boolean equals(Code other) {
-		return Arrays.equals(this.sequence, other.sequence);
+	@Override
+	public int hashCode() {
+		int sum = 0;
+		for(int i = 0; i < sequence.length; i++) {
+			sum = sum * 10 + sequence[i];
+		}
+		return sum;
+	}
+
+	@Override
+	public final boolean equals(Object other) {
+		if (other == this) return true;
+		if (other == null) return false;
+		if (this.getClass() != other.getClass()) return false;
+
+		return Arrays.equals(sequence, ((Code) other).sequence);
 	}
 	
 	@Override
