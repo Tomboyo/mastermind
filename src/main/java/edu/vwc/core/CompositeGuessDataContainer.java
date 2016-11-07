@@ -3,18 +3,21 @@ package edu.vwc.core;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+import edu.vwc.sequence.Code;
+import edu.vwc.sequence.Response;
+
 class CompositeGuessDataContainer {
-  private Key guess;
+  private Code guess;
   private int codeIndex;
-  private Hashtable<Response, ArrayList<Key>> responseGroups;
+  private Hashtable<Response, ArrayList<Code>> responseGroups;
   
-  CompositeGuessDataContainer(Key guess, int index, Hashtable<Response, ArrayList<Key>> responseGroup) {
+  CompositeGuessDataContainer(Code guess, int index, Hashtable<Response, ArrayList<Code>> responseGroup) {
     this.guess = guess;
     this.codeIndex = index;
     this.responseGroups = responseGroup;
   }
   
-  Key getGuess() {
+  Code getGuess() {
     return this.guess;
   }
   
@@ -22,7 +25,7 @@ class CompositeGuessDataContainer {
     return this.codeIndex;
   }
   
-  Hashtable<Response, ArrayList<Key>> getResponseGroups() {
+  Hashtable<Response, ArrayList<Code>> getResponseGroups() {
     return this.responseGroups;
   }
 }

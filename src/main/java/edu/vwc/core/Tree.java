@@ -4,10 +4,13 @@ import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Map.Entry;
 
+import edu.vwc.sequence.Code;
+import edu.vwc.sequence.Response;
+
 // TODO: Research Future thread?
 class Tree {
   private int length;
-  private Key[] allKeys;
+  private Code[] allKeys;
   private Response correctResponse;  
   private Node gameTree;
   
@@ -46,9 +49,9 @@ class Tree {
     return this.gameTree;
   }
   
-  private static Key[] generateAllKeys(int colors, int pegs) {
+  private static Code[] generateAllKeys(int colors, int pegs) {
     int numCodes = (int)Math.pow(colors,  pegs);
-    Key[] keys = new Key[numCodes];
+    Code[] keys = new Code[numCodes];
     int codesIndex = 0;
 
     // Tracker holds the code we are generating. We treat its 'pegs' like base-colors numbers.
@@ -74,7 +77,7 @@ class Tree {
       }
       
       // Tracker now represents the next code.
-      keys[codesIndex++] = new Key(tracker);
+      keys[codesIndex++] = new Code(tracker);
     }
     
     return keys;
@@ -85,7 +88,7 @@ class Tree {
     ArrayList<CompositeGuessDataContainer> compositeData;  // Holds guess/response data used in computation
     boolean[] codeMask; // Codes that can not be used as guesses by this branch
     
-    Branch(Tree r, Key[] possibleAnswers, boolean[] mask) {
+    Branch(Tree r, Code[] possibleAnswers, boolean[] mask) {
       this.codeMask = mask;
       this.root = r;
       
@@ -97,20 +100,20 @@ class Tree {
       for (int i = 0; i < root.allKeys.length; i++) {
         if (codeMask[i]) continue;
         
-        Key guess = root.allKeys[i];
+        Code guess = root.allKeys[i];
       
-        Hashtable<Response, ArrayList<Key>> responseGroups = new Hashtable<Response, ArrayList<Key>>();
+        Hashtable<Response, ArrayList<Code>> responseGroups = new Hashtable<Response, ArrayList<Code>>();
         
         // What response would this guess get from any of the possible answers?
-        for (Key master : possibleAnswers) {
-          Response responseCode = guess.getFeedbackFromKey(master);
+        for (Code master : possibleAnswers) {
+          Response responseCode = guess.compareTo(master);
           
           //System.err.println(Arrays.toString(responseCode)+": "+guess+"<-->"+master);
           //Log the master key used based on the response garnered by the guess
           if (responseGroups.containsKey(responseCode)) {
             responseGroups.get(responseCode).add(master);
           } else {
-            ArrayList<Key> list = new ArrayList<Key>();
+            ArrayList<Code> list = new ArrayList<Code>();
             list.add(master);
             responseGroups.put(responseCode, list);
           }
@@ -134,13 +137,13 @@ class Tree {
         // For each response group, we need to see how long it takes to win
         // Then we compare the results of *this* guess to every other guess we've made. Which one is fastest?
       
-        Hashtable<Response, ArrayList<Key>> responseGroups = composite.getResponseGroups();
+        Hashtable<Response, ArrayList<Code>> responseGroups = composite.getResponseGroups();
         int maximumTurnsToWin = 1;
         
         Node[] tentativeLog = new Node[responseGroups.size()];
         int logIndex = 0;
         
-        for (Entry<Response, ArrayList<Key>> responseGroup : responseGroups.entrySet()) {
+        for (Entry<Response, ArrayList<Code>> responseGroup : responseGroups.entrySet()) {
           tentativeLog[logIndex++] = new Node(composite.getGuess(), responseGroup.getKey());
           if (responseGroup.getKey().equals(correctResponse)) {
             // This response group contains the answer, so our guess was right. This answer is found in 1 guess.
@@ -151,8 +154,8 @@ class Tree {
           // We have response and a given number of master keys that could still be answers
           // We must start new Branches to determine how long it takes to win for each response group
           
-          ArrayList<Key> list = responseGroup.getValue();
-          Key[] codes = new Key[list.size()];
+          ArrayList<Code> list = responseGroup.getValue();
+          Code[] codes = new Code[list.size()];
           codes = responseGroup.getValue().toArray(codes);
           
           // Short-circuit obvious one-step branches if we don't need a log.
@@ -202,13 +205,13 @@ class Tree {
    * Record of moves made in a game evaluation.
    */
   class Node {
-    private Key guess;
+    private Code guess;
     private Response response;
     private Node[] children;
     
     public Node() {}
     
-    public Node(Key guess, Response response) {
+    public Node(Code guess, Response response) {
       this.response = response;
       this.guess = guess;
     }
