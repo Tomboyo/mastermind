@@ -25,7 +25,7 @@ public class Response {
 		if (other == null) return false;
 		if (this.getClass() != other.getClass()) return false;
 
-		return Arrays.equals(sequence, ((Response)other).sequence);
+		return Arrays.equals(sequence, ((Response) other).sequence);
 	}
 	
 	@Override
