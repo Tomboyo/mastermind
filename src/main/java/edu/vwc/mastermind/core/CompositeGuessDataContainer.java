@@ -1,10 +1,10 @@
-package edu.vwc.core;
+package edu.vwc.mastermind.core;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import edu.vwc.sequence.Code;
-import edu.vwc.sequence.Response;
+import edu.vwc.mastermind.sequence.Code;
+import edu.vwc.mastermind.sequence.Response;
 
 class CompositeGuessDataContainer {
   private Code guess;

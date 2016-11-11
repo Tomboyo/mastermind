@@ -1,4 +1,4 @@
-package edu.vwc.sequence;
+package edu.vwc.mastermind.sequence;
 
 /**
  * Contains logic to filter a set of codes into a subset, such as to create a

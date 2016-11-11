@@ -1,8 +1,10 @@
-package edu.vwc.core;
+package edu.vwc.mastermind.core;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+
+import edu.vwc.mastermind.core.Mastermind;
 
 public class MastermindTest {
 

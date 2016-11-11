@@ -1,10 +1,10 @@
-package edu.vwc.sequence;
+package edu.vwc.mastermind.sequence;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import edu.vwc.mastermind.sequence.Response;
 
-import edu.vwc.sequence.Response;
+import static org.junit.Assert.*;
 
 public class ResponseTest {
 

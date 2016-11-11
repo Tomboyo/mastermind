@@ -1,11 +1,11 @@
-package edu.vwc.core;
+package edu.vwc.mastermind.core;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Map.Entry;
 
-import edu.vwc.sequence.Code;
-import edu.vwc.sequence.Response;
+import edu.vwc.mastermind.sequence.Code;
+import edu.vwc.mastermind.sequence.Response;
 
 // TODO: Research Future thread?
 class Tree {

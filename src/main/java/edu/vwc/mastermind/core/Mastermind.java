@@ -1,4 +1,4 @@
-package edu.vwc.core;
+package edu.vwc.mastermind.core;
 
 public class Mastermind {
   private int pegs, colors;

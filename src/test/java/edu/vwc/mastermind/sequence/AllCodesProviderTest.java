@@ -1,10 +1,13 @@
-package edu.vwc.sequence;
+package edu.vwc.mastermind.sequence;
 
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
 
 import org.junit.Test;
+
+import edu.vwc.mastermind.sequence.AllCodesProvider;
+import edu.vwc.mastermind.sequence.Code;
 
 import static org.hamcrest.CoreMatchers.*;
 

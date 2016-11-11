@@ -1,4 +1,4 @@
-package edu.vwc.sequence;
+package edu.vwc.mastermind.sequence;
 
 /**
  * Responsible for providing the set of Codes for a game.

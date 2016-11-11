@@ -1,4 +1,4 @@
-package edu.vwc.sequence;
+package edu.vwc.mastermind.sequence;
 
 import java.util.Arrays;
 
