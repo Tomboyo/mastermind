@@ -7,37 +7,26 @@ import java.util.Arrays;
  * @author Tom Simmons
  * 
  */
-public class AllCodesProvider implements ICodesProvider {
-
-	private int colors;
-	private int pegs;	
-	private Code[] codes;	
-	private static AllCodesProvider reference;
-
-	private AllCodesProvider() {}
-
-	public static AllCodesProvider getInstance() {
-		if (reference != null) {
-			return reference;
-		}
-
-		reference = new AllCodesProvider();
-		return reference;
+public class AllCodesProvider extends AbstractCodesProvider {
+	
+	private Code[] codes;
+	
+	public AllCodesProvider(int colors, int pegs) {
+		super(colors, pegs);
 	}
 
-	public void set(int colors, int pegs) {
-		this.colors = colors;
-		this.pegs = pegs;
-		codes = null;
-	}
-
+	/**
+	 * Get complete enumeration of Codes.
+	 * @return Code collection containing colors^pegs codes.
+	 */
+	@Override
 	public Code[] getCodes() {
 		if (codes != null) {
 			return codes;
 		}
-
+		
 		int numCodes = (int) Math.pow(colors,  pegs);
-		codes = new Code[numCodes];		
+		codes = new Code[numCodes];
 		int codesIndex = 0;
 
 		// Tracker holds the code we are generating.

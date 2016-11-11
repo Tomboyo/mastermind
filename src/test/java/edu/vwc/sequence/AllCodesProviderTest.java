@@ -9,14 +9,18 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.*;
 
 public class AllCodesProviderTest {
+	
+	private AllCodesProvider provider;
 
-	AllCodesProvider provider = AllCodesProvider.getInstance();
-
+	/**
+	 * Verify that the AllCodesProvider returns a complete enumeration of Code
+	 * permutations.
+	 */
 	@Test
 	public void testGetCodes() {
 		
 		// Tell the provider our game has 3 colors and 2 pegs allowed per code
-		provider.set(3, 2);
+		provider = new AllCodesProvider(3, 2);
 		
 		// get the collection
 		Code[] actual = provider.getCodes();
