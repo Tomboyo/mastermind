@@ -1,5 +1,7 @@
 package edu.vwc.mastermind.sequence;
 
+import edu.vwc.mastermind.core.IFilter;
+
 /**
  * Responsible for providing the set of Codes for a game.
  * @author Tom Simmons
@@ -35,16 +37,16 @@ public abstract class AbstractCodesProvider {
 	
 	/**
 	 * Get a subset of getCodes() based on filter logic provided by the
-	 * ICodeFilterStrategy implementer.
+	 * IFilter implementer.
 	 * @param filter that controls which Codes go into the subset
 	 * @return the filtered subset of getCodes()
 	 */
-	public Code[] getSubset(ICodeFilterStrategy filterStrategy) {
+	public Code[] getSubset(IFilter<Code> filter) {
 		if (codes == null) {
 			codes = getCodes();
 		}
 		
-		return filterStrategy.filter(codes);
+		return filter.filter(codes);
 	}
 
 }
