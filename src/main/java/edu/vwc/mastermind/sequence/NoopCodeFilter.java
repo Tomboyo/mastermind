@@ -1,8 +1,6 @@
 package edu.vwc.mastermind.sequence;
 
-import edu.vwc.mastermind.core.IFilter;
-
-public class NoopFirstGuessFilter implements IFilter<Code> {
+public class NoopCodeFilter implements CodeFilter {
 
 	@Override
 	public Code[] filter(Code[] array) {

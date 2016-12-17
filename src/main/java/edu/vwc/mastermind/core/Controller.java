@@ -7,20 +7,21 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import edu.vwc.mastermind.sequence.AbstractCodesProvider;
 import edu.vwc.mastermind.sequence.Code;
+import edu.vwc.mastermind.sequence.CodeFilter;
+import edu.vwc.mastermind.sequence.CodesProvider;
 import edu.vwc.mastermind.tree.GameTree;
 import edu.vwc.mastermind.tree.ResultProcessor;
 
 public class Controller {
 
-	private AbstractCodesProvider codesProvider;
-	private IFilter<Code> firstGuessFilter, allCodesFilter;
+	private CodesProvider codesProvider;
+	private CodeFilter firstGuessFilter, allCodesFilter;
 	private ResultProcessor processor;
 	private ExecutorService threadPool;
 	
-	public Controller(AbstractCodesProvider codesProvider,
-			IFilter<Code> firstGuessFilter,	IFilter<Code> allCodesFilter,
+	public Controller(CodesProvider codesProvider,
+			CodeFilter firstGuessFilter, CodeFilter allCodesFilter,
 			ResultProcessor processor) {
 		this.codesProvider = codesProvider;
 		this.firstGuessFilter = firstGuessFilter;
@@ -32,12 +33,13 @@ public class Controller {
 	}
 	
 	public void run() throws ExecutionException {
-		Code[] firstGuessSubset = codesProvider.getSubset(firstGuessFilter);		
+		Code[] firstGuessSubset = codesProvider.getSubset(firstGuessFilter);
+		Code[] answerSubset = codesProvider.getSubset(allCodesFilter);
 		Future<GameTree>[] branches = new Future[firstGuessSubset.length];
 
 		// Start generation of game trees
 		for (int i = 0; i < firstGuessSubset.length; i++) {
-			branches[i] = threadPool.submit(new Branch(firstGuessSubset[i]));
+			branches[i] = threadPool.submit(new Branch(firstGuessSubset[i], answerSubset));
 		}
 		firstGuessSubset = null;
 		

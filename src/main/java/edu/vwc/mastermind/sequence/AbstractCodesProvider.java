@@ -1,12 +1,10 @@
 package edu.vwc.mastermind.sequence;
 
-import edu.vwc.mastermind.core.IFilter;
-
 /**
  * Responsible for providing the set of Codes for a game.
  * @author Tom Simmons
  */
-public abstract class AbstractCodesProvider {
+public abstract class AbstractCodesProvider implements CodesProvider {
 	
 	protected int colors;
 	protected int pegs;
@@ -26,22 +24,17 @@ public abstract class AbstractCodesProvider {
 		this.pegs = pegs;
 	}
 	
-	/**
-	 * Get a subset of all permutations of Codes.
-	 * This is intended to be either a complete enumeration, or a logically complete subset
-	 * that omits Codes that add no complexity to the game but waste computation time.
-	 * Should cache result to codes variable.
-	 * @return subset of all Code permutations
+	/* (non-Javadoc)
+	 * @see edu.vwc.mastermind.sequence.CodesProvider#getCodes()
 	 */
+	@Override
 	public abstract Code[] getCodes();
 	
-	/**
-	 * Get a subset of getCodes() based on filter logic provided by the
-	 * IFilter implementer.
-	 * @param filter that controls which Codes go into the subset
-	 * @return the filtered subset of getCodes()
+	/* (non-Javadoc)
+	 * @see edu.vwc.mastermind.sequence.CodesProvider#getSubset(edu.vwc.mastermind.sequence.CodeFilter)
 	 */
-	public Code[] getSubset(IFilter<Code> filter) {
+	@Override
+	public Code[] getSubset(CodeFilter filter) {
 		if (codes == null) {
 			codes = getCodes();
 		}
