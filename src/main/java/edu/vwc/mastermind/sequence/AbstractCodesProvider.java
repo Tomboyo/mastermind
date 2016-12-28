@@ -16,7 +16,7 @@ public abstract class AbstractCodesProvider implements CodesProvider {
 	 * @param pegs Number of pegs allowed in a code
 	 */
 	public AbstractCodesProvider (int colors, int pegs) {
-		if (colors == 0 || pegs == 0) {
+		if (colors <= 0 || pegs <= 0) {
 			throw new IllegalArgumentException("Colors and Pegs must be greater than zero");
 		}
 		
