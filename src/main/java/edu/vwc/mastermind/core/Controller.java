@@ -2,6 +2,7 @@ package edu.vwc.mastermind.core;
 
 import java.io.BufferedOutputStream;
 import java.io.PrintWriter;
+import java.util.Comparator;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,13 +18,17 @@ public class Controller {
 
 	private CodesProvider codesProvider;
 	private CodeFilter firstGuessFilter;
+	private Comparator<GameTree> branchSelector;
 	private ResultProcessor processor;
 	private ExecutorService threadPool;
 	
 	public Controller(CodesProvider codesProvider,
-			CodeFilter firstGuessFilter, ResultProcessor processor) {
+			CodeFilter firstGuessFilter,
+			Comparator<GameTree> branchSelector,
+			ResultProcessor processor) {
 		this.codesProvider = codesProvider;
 		this.firstGuessFilter = firstGuessFilter;
+		this.branchSelector = branchSelector;
 		this.processor = processor;
 		
 		threadPool = Executors.newFixedThreadPool(
@@ -31,14 +36,14 @@ public class Controller {
 	}
 	
 	public void run() throws ExecutionException {
-		Code[] firstGuesses = codesProvider.getSubset(firstGuessFilter);
+		Code[] firstGuessSubset = codesProvider.getSubset(firstGuessFilter);
 		Code[] allCodes = codesProvider.getCodes();
-		Future<GameTree>[] branches = new Future[firstGuesses.length];
+		Future<GameTree>[] branches = new Future[firstGuessSubset.length];
 
 		// Start generation of game trees
-		for (int i = 0; i < firstGuesses.length; i++) {
-			branches[i] = threadPool.submit(new Branch(firstGuesses[i],
-					allCodes, new boolean[allCodes.length]));
+		for (int i = 0; i < firstGuessSubset.length; i++) {
+			branches[i] = threadPool.submit(new Branch(firstGuessSubset[i],
+					allCodes, branchSelector, new boolean[allCodes.length]));
 		}
 		
 		// Schedule processing of finished trees
