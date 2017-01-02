@@ -14,11 +14,5 @@ public interface GameTreeVisitor<T> {
 	 * @param it
 	 */
 	public void visit(GameTree it);
-	
-	/**
-	 * Get the value computer and stored away by visit()ing
-	 * @return the stored value
-	 */
-	public T get();
 
 }

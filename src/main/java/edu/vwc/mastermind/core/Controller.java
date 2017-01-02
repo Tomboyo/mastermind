@@ -1,81 +1,105 @@
 package edu.vwc.mastermind.core;
 
-import java.io.BufferedOutputStream;
-import java.io.PrintWriter;
 import java.util.Comparator;
+import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import edu.vwc.mastermind.sequence.Code;
 import edu.vwc.mastermind.sequence.CodeFilter;
 import edu.vwc.mastermind.sequence.CodesProvider;
 import edu.vwc.mastermind.tree.GameTree;
-import edu.vwc.mastermind.tree.ResultProcessor;
+import edu.vwc.mastermind.tree.GameTreeVisitor;
 
+/**
+ * Responsible for running the simulation. Dependencies are injected in the
+ * constructor, then the game in run in a multithreaded environment. branches
+ * are started for each initial guess, and those branches are compared to one
+ * another once resolved. The optimal branch is kept for further processing.
+ * Each controller instance should be responsible for the simulation of exactly
+ * one game.
+ * 
+ * TODO: Ideally this task can be distributed across multiple machines. This is
+ * beyond the scope of my current knowledge (and hardware access) but is
+ * absolutely on the chalkboard.
+ * 
+ * @author Tom
+ *
+ */
 public class Controller {
 
+	// Configuration
 	private CodesProvider codesProvider;
 	private CodeFilter firstGuessFilter;
 	private Comparator<GameTree> branchSelector;
-	private ResultProcessor processor;
-	private ExecutorService threadPool;
 	
+	private CompletionService<GameTree> cs;
+	
+	private GameTree result;
+	
+	/**
+	 * Configure the controller with simulation dependencies.
+	 * 
+	 * @param codesProvider
+	 *            Instance to generate all the codes used by the game.
+	 * @param firstGuessFilter
+	 *            Determines which codes to use to make the first guesses of the
+	 *            game, filtered from codesProvider
+	 * @param branchSelector
+	 *            Logic to decide what the optimal branch looks like (e.g,
+	 *            shortest game on average, shortest game absolutely)
+	 */
 	public Controller(CodesProvider codesProvider,
 			CodeFilter firstGuessFilter,
-			Comparator<GameTree> branchSelector,
-			ResultProcessor processor) {
+			Comparator<GameTree> branchSelector) {
 		this.codesProvider = codesProvider;
 		this.firstGuessFilter = firstGuessFilter;
 		this.branchSelector = branchSelector;
-		this.processor = processor;
 		
-		threadPool = Executors.newFixedThreadPool(
-				Runtime.getRuntime().availableProcessors());
+		cs = new ExecutorCompletionService<GameTree>(Executors
+				.newFixedThreadPool(Runtime.getRuntime()
+						.availableProcessors()));
+		
+		result = null;
 	}
 	
-	public void run() throws ExecutionException {
+	/**
+	 * Begins simulation based on constructor parameters.
+	 * 
+	 * @throws ExecutionException
+	 *             If a simulation branch encounters error
+	 * @throws InterruptedException
+	 *             If a simulation branch is interrupted
+	 */
+	public synchronized void run() throws ExecutionException, 
+			InterruptedException {
 		Code[] firstGuessSubset = codesProvider.getSubset(firstGuessFilter);
 		Code[] allCodes = codesProvider.getCodes();
-		Future<GameTree>[] branches = new Future[firstGuessSubset.length];
 
 		// Start generation of game trees
+		for (Code guess : firstGuessSubset) {
+			cs.submit(new Branch(guess,	allCodes, branchSelector,
+					new boolean[allCodes.length]));
+		}
+		
+		// Select the best branch
+		GameTree localBest = null;
 		for (int i = 0; i < firstGuessSubset.length; i++) {
-			branches[i] = threadPool.submit(new Branch(firstGuessSubset[i],
-					allCodes, branchSelector, new boolean[allCodes.length]));
-		}
-		
-		// Schedule processing of finished trees
-		Future<?>[] waitFor = new Future[branches.length];
-		for (int i = 0; i < branches.length; i++) {
-			final Future<GameTree> f = branches[i];
-			waitFor[i] = threadPool.submit(() -> {
-				try {
-					processor.receive(f.get());
-				} catch (InterruptedException e) {
-				} catch (ExecutionException e) {
-					e.printStackTrace();
-				}
-			});
-		}
-		branches = null;
-		
-		// Wait on execution of processor tasks
-		for (Future<?> f : waitFor) {
-			try {
-				f.get();
-			} catch (InterruptedException e) {
-			} catch (ExecutionException e2) {
-				System.err.println("Could not evaluate branch of game");
-				throw e2;
+			GameTree gameTree = cs.take().get();
+			// If the gameTree is "better"...
+			if (branchSelector.compare(gameTree, localBest) < 0) {
+				localBest = gameTree;
 			}
 		}
-		waitFor = null;
 		
-		// Display results of mastermind simulation
-		processor.printResults(new PrintWriter(
-				new BufferedOutputStream(System.out)));
+		result = localBest;
+	}
+	
+	public void processResult(GameTreeVisitor<?> visitor) {
+		if (result == null) throw new IllegalStateException(
+				"Result has not yet been computed");
 		
+		visitor.visit(result);
 	}
 }
