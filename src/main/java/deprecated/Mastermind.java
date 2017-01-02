@@ -1,4 +1,4 @@
-package edu.vwc.mastermind.core;
+package deprecated;
 
 public class Mastermind {
   private int pegs, colors;

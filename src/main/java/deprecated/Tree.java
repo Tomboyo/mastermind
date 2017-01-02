@@ -1,4 +1,4 @@
-package edu.vwc.mastermind.core;
+package deprecated;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
