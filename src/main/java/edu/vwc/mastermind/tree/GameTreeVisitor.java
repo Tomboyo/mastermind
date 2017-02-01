@@ -1,18 +1,25 @@
 package edu.vwc.mastermind.tree;
 
 /**
- * Visit the nodes of a Game Tree and calculate some information based on them.
- * After visiting, get() may be called to retrieve the data of type T.
- * @author Tom
+ * Visits nodes in a GameTree and computes data based on internal logic
+ * 
+ * @author tomsi
  *
- * @param <T> Type of data returned after inspecting the Game Tree
+ * @param <T> Type of computed data
  */
 public interface GameTreeVisitor<T> {
 
 	/**
-	 * Visit every node in the GameTree starting with "it".
+	 * Visit a single node
+	 * 
 	 * @param it
 	 */
 	public void visit(GameTree it);
 
+	/**
+	 * Return computed data
+	 * 
+	 * @return
+	 */
+	public T value();
 }
