@@ -33,7 +33,7 @@ public class IteratorsTest {
 				new PreorderIterator<Node<String>>(root);
 
 		while (iterator.hasNext()) {
-			sb.append(iterator.next().getData()).append(",");
+			sb.append(iterator.next().data).append(",");
 		}
 
 		assertEquals("R,B,LA,LB,LC,", sb.toString());
