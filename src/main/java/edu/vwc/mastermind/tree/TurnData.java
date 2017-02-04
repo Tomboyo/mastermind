@@ -7,9 +7,10 @@ import edu.vwc.mastermind.sequence.Code;
 import edu.vwc.mastermind.sequence.Response;
 
 /**
- * Holds data pertaining to a turn in the mastermind game tree
+ * State object generated during game tree analysis and stored in a Node
+ * structure.
  * 
- * @author tomsi
+ * @author tomboyo
  *
  */
 public class TurnData {

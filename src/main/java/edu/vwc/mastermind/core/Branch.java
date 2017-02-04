@@ -12,13 +12,14 @@ import java.util.concurrent.Callable;
 
 import edu.vwc.mastermind.sequence.Code;
 import edu.vwc.mastermind.sequence.Response;
-import edu.vwc.mastermind.tree.GameTree;
+import edu.vwc.mastermind.tree.Node;
+import edu.vwc.mastermind.tree.TurnData;
 
-public class Branch implements Callable<GameTree> {
+public class Branch implements Callable<Node<TurnData>> {
 
 	private final Code guess;
 	private final Code[] possibleAnswers;
-	private final Comparator<GameTree> branchSelector;
+	private final Comparator<Node<TurnData>> branchSelector;
 	private final boolean[] guessMask;
 
 	/**
@@ -32,7 +33,7 @@ public class Branch implements Callable<GameTree> {
 	 *            What COdes have already been guessed
 	 */
 	public Branch(Code guess, Code[] possibleAnswers,
-			Comparator<GameTree> branchSelector, boolean[] guessMask) {
+			Comparator<Node<TurnData>> branchSelector, boolean[] guessMask) {
 		this.guess = guess;
 		this.possibleAnswers = possibleAnswers;
 		this.branchSelector = branchSelector;
@@ -44,7 +45,7 @@ public class Branch implements Callable<GameTree> {
 	 * constructor.
 	 * @return The complete game tree.
 	 */
-	public GameTree call() throws Exception {
+	public Node<TurnData> call() throws Exception {
 		Map<Response, List<Code>> answerGroups = 
 				new HashMap<>(possibleAnswers.length);
 
@@ -65,7 +66,7 @@ public class Branch implements Callable<GameTree> {
 		/*
 		 * Create the root node of the Game Tree record
 		 */
-		GameTree root = new GameTree(guess, answerGroups);
+		Node<TurnData> root = new Node<>(new TurnData(guess, answerGroups));
 
 		/*
 		 * Iterate over the answer groups and begin recursive subcomputation.
@@ -80,7 +81,7 @@ public class Branch implements Callable<GameTree> {
 		while (iter.hasNext()) {
 			Entry<Response, List<Code>> answerGroup = iter.next();
 
-			GameTree best = null;
+			Node<TurnData> best = null;
 			Code[] nextPossibleAnswers = 
 					answerGroup.getValue().toArray(new Code[] {});
 			for (int i = 0; i < nextPossibleAnswers.length; i++) {
@@ -94,7 +95,7 @@ public class Branch implements Callable<GameTree> {
 				
 				// Simulate a subordinate branch with a new guess
 				Code nextGuess = nextPossibleAnswers[i];
-				GameTree alternative = new Branch(nextGuess, nextPossibleAnswers,
+				Node<TurnData> alternative = new Branch(nextGuess, nextPossibleAnswers,
 						branchSelector, nextGuessMask).call();
 				
 				// If the simulated branch is "better" than the current best,
@@ -106,7 +107,7 @@ public class Branch implements Callable<GameTree> {
 			
 			// Append the best sub child of this answer group to the root Game
 			// Tree.
-			root.addChild(best);
+			root.add(best);
 		}
 
 		return root;

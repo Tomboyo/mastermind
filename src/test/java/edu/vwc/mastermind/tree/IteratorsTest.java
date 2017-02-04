@@ -9,16 +9,16 @@ import org.junit.Test;
 
 public class IteratorsTest {
 
-	Tree<String> root;
+	Node<String> root;
 
 	@Before
 	public void beforeTest() {
 		// R( B(LA, LB), LC )
-		root = new Tree<String>("R");
-		Tree<String> branch = new Tree<String>("B");
-		Tree<String> leafA = new Tree<String>("LA");
-		Tree<String> leafB = new Tree<String>("LB");
-		Tree<String> leafC = new Tree<String>("LC");
+		root = new Node<String>("R");
+		Node<String> branch = new Node<String>("B");
+		Node<String> leafA = new Node<String>("LA");
+		Node<String> leafB = new Node<String>("LB");
+		Node<String> leafC = new Node<String>("LC");
 
 		root.add(branch);
 		root.add(leafC);
@@ -29,8 +29,8 @@ public class IteratorsTest {
 	@Test
 	public void testPreorderIterator() {
 		StringBuilder sb = new StringBuilder();
-		Iterator<Tree<String>> iterator =
-				new InorderIterator<Tree<String>>(root);
+		Iterator<Node<String>> iterator =
+				new PreorderIterator<Node<String>>(root);
 
 		while (iterator.hasNext()) {
 			sb.append(iterator.next().getData()).append(",");

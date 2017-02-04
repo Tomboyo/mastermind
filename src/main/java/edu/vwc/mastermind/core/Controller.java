@@ -9,8 +9,10 @@ import java.util.concurrent.Executors;
 import edu.vwc.mastermind.sequence.Code;
 import edu.vwc.mastermind.sequence.CodeFilter;
 import edu.vwc.mastermind.sequence.CodesProvider;
-import edu.vwc.mastermind.tree.GameTree;
-import edu.vwc.mastermind.tree.GameTreeVisitor;
+import edu.vwc.mastermind.tree.PreorderIterator;
+import edu.vwc.mastermind.tree.Node;
+import edu.vwc.mastermind.tree.NodeVisitor;
+import edu.vwc.mastermind.tree.TurnData;
 
 /**
  * Responsible for running the simulation. Dependencies are injected in the
@@ -24,6 +26,11 @@ import edu.vwc.mastermind.tree.GameTreeVisitor;
  * beyond the scope of my current knowledge (and hardware access) but is
  * absolutely on the chalkboard.
  * 
+ * TODO: With Node/TUrnData/COmparator/Visitor the way they are, it seems like
+ * we've created families of objects that need to work in concert. An abstract
+ * factory implementation may be in order, and in any case the Controller needs
+ * to be made agnostic to their types.
+ * 
  * @author Tom
  *
  */
@@ -32,12 +39,10 @@ public class Controller {
 	// Configuration
 	private CodesProvider codesProvider;
 	private CodeFilter firstGuessFilter;
-	private Comparator<GameTree> branchSelector;
-	
-	private CompletionService<GameTree> cs;
-	
-	private GameTree result;
-	
+	private Comparator<Node<TurnData>> branchSelector;
+	private CompletionService<Node<TurnData>> cs;
+	private Node<TurnData> result;
+
 	/**
 	 * Configure the controller with simulation dependencies.
 	 * 
@@ -50,20 +55,19 @@ public class Controller {
 	 *            Logic to decide what the optimal branch looks like (e.g,
 	 *            shortest game on average, shortest game absolutely)
 	 */
-	public Controller(CodesProvider codesProvider,
-			CodeFilter firstGuessFilter,
-			Comparator<GameTree> branchSelector) {
+	public Controller(CodesProvider codesProvider, CodeFilter firstGuessFilter,
+			Comparator<Node<TurnData>> branchSelector) {
 		this.codesProvider = codesProvider;
 		this.firstGuessFilter = firstGuessFilter;
 		this.branchSelector = branchSelector;
-		
-		cs = new ExecutorCompletionService<GameTree>(Executors
-				.newFixedThreadPool(Runtime.getRuntime()
-						.availableProcessors()));
-		
+
+		cs = new ExecutorCompletionService<Node<TurnData>>(
+				Executors.newFixedThreadPool(
+						Runtime.getRuntime().availableProcessors()));
+
 		result = null;
 	}
-	
+
 	/**
 	 * Begins simulation based on constructor parameters.
 	 * 
@@ -72,34 +76,39 @@ public class Controller {
 	 * @throws InterruptedException
 	 *             If a simulation branch is interrupted
 	 */
-	public synchronized void run() throws ExecutionException, 
-			InterruptedException {
+	public synchronized void run()
+			throws ExecutionException, InterruptedException {
 		Code[] firstGuessSubset = codesProvider.getSubset(firstGuessFilter);
 		Code[] allCodes = codesProvider.getCodes();
 
 		// Start generation of game trees
 		for (Code guess : firstGuessSubset) {
-			cs.submit(new Branch(guess,	allCodes, branchSelector,
+			cs.submit(new Branch(guess, allCodes, branchSelector,
 					new boolean[allCodes.length]));
 		}
-		
+
 		// Select the best branch
-		GameTree localBest = null;
+		Node<TurnData> localBest = null;
 		for (int i = 0; i < firstGuessSubset.length; i++) {
-			GameTree gameTree = cs.take().get();
+			Node<TurnData> gameTree = cs.take().get();
 			// If the gameTree is "better"...
 			if (branchSelector.compare(gameTree, localBest) < 0) {
 				localBest = gameTree;
 			}
 		}
-		
+
 		result = localBest;
 	}
-	
-	public void processResult(GameTreeVisitor<?> visitor) {
-		if (result == null) throw new IllegalStateException(
-				"Result has not yet been computed");
+
+	public <E> E processResult (NodeVisitor<TurnData, E> visitor) {
+		if (result == null)
+			throw new IllegalStateException("Result has not yet been computed");
+
+		PreorderIterator<Node<TurnData>> iter = new PreorderIterator<>(result);
+		while (iter.hasNext()) {
+			visitor.visit(iter.next());
+		}
 		
-		visitor.visit(result);
+		return visitor.value();
 	}
 }
