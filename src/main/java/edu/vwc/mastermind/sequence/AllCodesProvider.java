@@ -1,8 +1,8 @@
 package edu.vwc.mastermind.sequence;
 
 /**
- * Generates all Code permutations
- * @author Tom Simmons
+ * Generates all Code permutations (colors^pegs codes in total)
+ * @author Tomboyo
  * 
  */
 public class AllCodesProvider implements CodesProvider {

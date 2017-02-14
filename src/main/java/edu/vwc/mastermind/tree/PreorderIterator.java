@@ -6,7 +6,7 @@ import java.util.Stack;
 /**
  * Performs in-order traversal of a tree data structure.
  * 
- * @author tomsi
+ * @author Tomboyo
  *
  * @param <E>
  *            Type of tree data structure (returned by Iterator it.next())

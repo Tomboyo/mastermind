@@ -2,6 +2,11 @@ package edu.vwc.mastermind.sequence;
 
 import java.util.Arrays;
 
+/**
+ * Represents a colored peg sequence guessed by the Code Breaker in a game of Mastermind.
+ * @author Tomboyo
+ *
+ */
 public class Code {
 
 	private int[] sequence;
@@ -9,13 +14,15 @@ public class Code {
 	public Code(int... sequence) {
 		this.sequence = sequence;
 	}
-
-	/*
+	
+	/**
 	 * Get the feedback for this code when compared against a given key
-	 * EXPECTS Code key, same length as this code.
-	 * RESPONSE is a short[]
-	 * 2 = peg in correct place, 1 = peg out of place, 0 = no feedback
-	 * Response pegs sorted in descending order (e.g, [2,2,2,1,1,0,0,0])
+	 * @param answer
+	 *            Code to compare this one against
+	 * @return A Response object indicating the results of the comparison
+	 * @throws IllegalArgumentException
+	 *             When this and the answer code can not be compared (their
+	 *             lengths differ)
 	 */
 	public Response compareTo(Code answer) throws IllegalArgumentException {
 		if (answer.sequence.length != sequence.length) {
@@ -63,6 +70,10 @@ public class Code {
 		return sum;
 	}
 
+	/**
+	 * Two Codes are considered equal if and only if they are the same length
+	 * and have identical numbers ("pegs") in identical positions.
+	 */
 	@Override
 	public final boolean equals(Object other) {
 		if (other == this) return true;

@@ -10,7 +10,7 @@ import edu.vwc.mastermind.sequence.Response;
  * State object generated during game tree analysis and stored in a Node
  * structure.
  * 
- * @author tomboyo
+ * @author Tomboyo
  *
  */
 public class TurnData {

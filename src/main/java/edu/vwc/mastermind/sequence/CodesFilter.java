@@ -6,7 +6,7 @@ package edu.vwc.mastermind.sequence;
  * logically complete subset of codes such that all games terminate in the same
  * length, but fewer comparisons have to be made.
  * 
- * @author tom.simmons
+ * @author Tomboyo
  *
  */
 public interface CodesFilter {

@@ -2,7 +2,7 @@ package edu.vwc.mastermind.sequence;
 
 /**
  * Dummy Codes Filter.
- * @author tom.simmons
+ * @author Tomboyo
  *
  */
 public class NoopCodesFilter implements CodesFilter {

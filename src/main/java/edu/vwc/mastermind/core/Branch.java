@@ -15,6 +15,11 @@ import edu.vwc.mastermind.sequence.Response;
 import edu.vwc.mastermind.tree.Node;
 import edu.vwc.mastermind.tree.TurnData;
 
+/**
+ * A branch in the simulation tree of a game of Mastermind.
+ * @author Tomboyo
+ *
+ */
 public class Branch implements Callable<Node<TurnData>> {
 
 	private final Code guess;

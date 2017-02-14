@@ -5,7 +5,7 @@ package edu.vwc.mastermind.sequence;
  * seed a simulation, or subsets of full enumerations used to produce logically
  * complete (not redundant) games.
  * 
- * @author tom.simmons
+ * @author Tomboyo
  *
  */
 public interface CodesProvider {

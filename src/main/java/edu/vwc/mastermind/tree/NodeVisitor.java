@@ -4,7 +4,7 @@ package edu.vwc.mastermind.tree;
  * Interface for visiting a Node or a collection of Nodes and accessing
  * aggregate data.
  * 
- * @author tomboyo
+ * @author Tomboyo
  *
  * @param <T>
  *            Type of data stored by Node

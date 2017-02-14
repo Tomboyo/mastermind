@@ -31,7 +31,7 @@ import edu.vwc.mastermind.tree.TurnData;
  * factory implementation may be in order, and in any case the Controller needs
  * to be made agnostic to their types.
  * 
- * @author Tom
+ * @author Tomboyo
  *
  */
 public class Controller {
