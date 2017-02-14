@@ -1,22 +1,27 @@
 package edu.vwc.mastermind.sequence;
 
-import java.util.Arrays;
-
 /**
  * Generates all Code permutations
  * @author Tom Simmons
  * 
  */
-public class AllCodesProvider extends AbstractCodesProvider {
+public class AllCodesProvider implements CodesProvider {
 	
+	private int colors;
+	private int pegs;
 	private Code[] codes;
 	
 	public AllCodesProvider(int colors, int pegs) {
-		super(colors, pegs);
+		this.colors = colors;
+		this.pegs = pegs;
 	}
 
 	/**
-	 * Get complete enumeration of Codes.
+	 * Get a complete enumeration of codes based on configured number of colors
+	 * and pegs. The codes collection is lazily initialized and does not exist
+	 * until this method is called. The result is cached, so future calls to
+	 * this method do not waste computation time.
+	 * 
 	 * @return Code collection containing colors^pegs codes.
 	 */
 	@Override

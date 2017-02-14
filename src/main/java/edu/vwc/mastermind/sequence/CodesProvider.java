@@ -1,22 +1,21 @@
 package edu.vwc.mastermind.sequence;
 
+/**
+ * Responsible for producing collections of codes, such as those necessary to
+ * seed a simulation, or subsets of full enumerations used to produce logically
+ * complete (not redundant) games.
+ * 
+ * @author tom.simmons
+ *
+ */
 public interface CodesProvider {
 
 	/**
-	 * Get a subset of all permutations of Codes.
-	 * This is intended to be either a complete enumeration, or a logically complete subset
-	 * that omits Codes that add no complexity to the game but waste computation time.
-	 * Should cache result to codes variable.
-	 * @return subset of all Code permutations
+	 * Get a set of Codes. This might be a complete enumeration of all codes
+	 * possible in a game, or some logical subset.
+	 * 
+	 * @return collection of Codes
 	 */
 	Code[] getCodes();
-
-	/**
-	 * Get a subset of getCodes() based on filter logic provided by the
-	 * IFilter implementer.
-	 * @param filter that controls which Codes go into the subset
-	 * @return the filtered subset of getCodes()
-	 */
-	Code[] getSubset(CodeFilter filter);
 
 }

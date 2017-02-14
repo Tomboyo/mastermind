@@ -7,7 +7,7 @@ import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Executors;
 
 import edu.vwc.mastermind.sequence.Code;
-import edu.vwc.mastermind.sequence.CodeFilter;
+import edu.vwc.mastermind.sequence.CodesFilter;
 import edu.vwc.mastermind.sequence.CodesProvider;
 import edu.vwc.mastermind.tree.PreorderIterator;
 import edu.vwc.mastermind.tree.Node;
@@ -38,7 +38,7 @@ public class Controller {
 
 	// Configuration
 	private CodesProvider codesProvider;
-	private CodeFilter firstGuessFilter;
+	private CodesFilter firstGuessFilter;
 	private Comparator<Node<TurnData>> branchSelector;
 	private CompletionService<Node<TurnData>> cs;
 	private Node<TurnData> result;
@@ -55,7 +55,7 @@ public class Controller {
 	 *            Logic to decide what the optimal branch looks like (e.g,
 	 *            shortest game on average, shortest game absolutely)
 	 */
-	public Controller(CodesProvider codesProvider, CodeFilter firstGuessFilter,
+	public Controller(CodesProvider codesProvider, CodesFilter firstGuessFilter,
 			Comparator<Node<TurnData>> branchSelector) {
 		this.codesProvider = codesProvider;
 		this.firstGuessFilter = firstGuessFilter;
@@ -78,7 +78,7 @@ public class Controller {
 	 */
 	public synchronized void run()
 			throws ExecutionException, InterruptedException {
-		Code[] firstGuessSubset = codesProvider.getSubset(firstGuessFilter);
+		Code[] firstGuessSubset = firstGuessFilter.getCodes(codesProvider);
 		Code[] allCodes = codesProvider.getCodes();
 
 		// Start generation of game trees
