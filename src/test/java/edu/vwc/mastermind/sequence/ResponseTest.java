@@ -41,11 +41,11 @@ public class ResponseTest {
 	 */
 	@Test
 	public void testEqualsCode() {
-		assertTrue(new Response(1) == new Response(1));
-		assertTrue(new Response(1, 2) == new Response(1, 2));
+		assertTrue(new Response(1).equals(new Response(1)));
+		assertTrue(new Response(1, 2).equals(new Response(1, 2)));
 		
-		assertFalse(new Response(1, 2) == new Response(2, 1));
-		assertFalse(new Response(2, 1) == new Response(1, 2));
+		assertFalse(new Response(1, 2).equals(new Response(2, 1)));
+		assertFalse(new Response(2, 1).equals(new Response(1, 2)));
 	}
 
 }
