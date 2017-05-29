@@ -37,8 +37,8 @@ import edu.vwc.mastermind.tree.TurnData;
 public class Controller {
 
 	// Configuration
-	private CodesProvider codesProvider;
-	private CodesFilter firstGuessFilter;
+	private CodesProvider allCodes;
+	private CodesProvider firstGuesses;
 	private Comparator<Node<TurnData>> branchSelector;
 	private CompletionService<Node<TurnData>> cs;
 	private Node<TurnData> result;
@@ -55,10 +55,10 @@ public class Controller {
 	 *            Logic to decide what the optimal branch looks like (e.g,
 	 *            shortest game on average, shortest game absolutely)
 	 */
-	public Controller(CodesProvider codesProvider, CodesFilter firstGuessFilter,
+	public Controller(CodesProvider allCodes, CodesProvider firstGuesses,
 			Comparator<Node<TurnData>> branchSelector) {
-		this.codesProvider = codesProvider;
-		this.firstGuessFilter = firstGuessFilter;
+		this.allCodes = allCodes;
+		this.firstGuesses = firstGuesses;
 		this.branchSelector = branchSelector;
 
 		cs = new ExecutorCompletionService<Node<TurnData>>(
@@ -78,13 +78,12 @@ public class Controller {
 	 */
 	public synchronized void run()
 			throws ExecutionException, InterruptedException {
-		Code[] firstGuessSubset = firstGuessFilter.getCodes(codesProvider);
-		Code[] allCodes = codesProvider.getCodes();
+		Code[] firstGuessSubset = firstGuesses.getCodes();
 
 		// Start generation of game trees
 		for (Code guess : firstGuessSubset) {
-			cs.submit(new Branch(guess, allCodes, branchSelector,
-					new boolean[allCodes.length]));
+			cs.submit(new Branch(guess, allCodes.getCodes(), branchSelector,
+					new boolean[allCodes.getCodes().length]));
 		}
 
 		// Select the best branch

@@ -1,6 +1,8 @@
 package edu.vwc.mastermind.sequence;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Represents the response given by a COde Maker in a game of mastermind to the
@@ -13,19 +15,42 @@ import java.util.Arrays;
  */
 public class Response {
 
+	private static Map<Integer, Response> cache = new HashMap<>();
+	
 	private int[] sequence;
 
-	public Response(int... sequence) {
+	private Response(int... sequence) {
 		this.sequence = sequence;
 	}
-
-	@Override
-	public int hashCode() {
+	
+	/**
+	 * Static flyweight factory for Response objects
+	 * @param sequence
+	 * @return
+	 */
+	public static Response valueOf(int... sequence) {
+		int key = hashCode(sequence);
+		
+		Response response = cache.get(key);
+		if (response == null) {
+			response = new Response(sequence);
+			cache.put(key, response);
+		}
+		
+		return response;
+	}
+	
+	private static int hashCode(int... sequence) {
 		int sum = 0;
 		for(int i = 0; i < sequence.length; i++) {
 			sum = sum * 10 + sequence[i];
 		}
 		return sum;
+	}
+
+	@Override
+	public int hashCode() {
+		return hashCode(sequence);
 	}
 
 	/**

@@ -1,6 +1,8 @@
 package edu.vwc.mastermind.sequence;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Represents a colored peg sequence guessed by the Code Breaker in a game of Mastermind.
@@ -9,10 +11,30 @@ import java.util.Arrays;
  */
 public class Code {
 
+	private static Map<Integer, Code> cache = new HashMap<>();
+	
 	private int[] sequence;
 
-	public Code(int... sequence) {
+	private Code(int... sequence) {
 		this.sequence = sequence;
+	}
+	
+	public static Code valueOf(int... sequence) {
+		int key = hashCode(sequence);
+		Code code = cache.get(key);
+		if (code == null) {
+			code = new Code(sequence);
+			cache.put(key, code);
+		}
+		return code;
+	}
+	
+	private static int hashCode(int...sequence) {
+		int sum = 0;
+		for(int i = 0; i < sequence.length; i++) {
+			sum = sum * 10 + sequence[i];
+		}
+		return sum;
 	}
 	
 	/**
@@ -29,7 +51,9 @@ public class Code {
 			throw new IllegalArgumentException("Length of Codes are unequal.");
 		}
 
-		// 0:x 1:w 2:r
+		// 0: no feedback
+		// 1: misplaced peg
+		// 2: correct peg
 		int[] response = new int[sequence.length];
 		boolean[] gmask = new boolean[sequence.length];
 		boolean[] cmask = new boolean[sequence.length];
@@ -58,16 +82,12 @@ public class Code {
 			}
 		}
 
-		return new Response(response); 
+		return Response.valueOf(response);
 	}
 
 	@Override
 	public int hashCode() {
-		int sum = 0;
-		for(int i = 0; i < sequence.length; i++) {
-			sum = sum * 10 + sequence[i];
-		}
-		return sum;
+		return hashCode(sequence);
 	}
 
 	/**
