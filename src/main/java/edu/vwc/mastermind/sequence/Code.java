@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Represents a colored peg sequence guessed by the Code Breaker in a game of Mastermind.
+ * Represents a colored peg sequence guessed by the Code Breaker in a1 game of Mastermind.
  * @author Tomboyo
  *
  */
@@ -20,21 +20,13 @@ public class Code {
 	}
 	
 	public static Code valueOf(int... sequence) {
-		int key = hashCode(sequence);
+		int key = Util.sequenceToInt(sequence);
 		Code code = cache.get(key);
 		if (code == null) {
 			code = new Code(sequence);
 			cache.put(key, code);
 		}
 		return code;
-	}
-	
-	private static int hashCode(int...sequence) {
-		int sum = 0;
-		for(int i = 0; i < sequence.length; i++) {
-			sum = sum * 10 + sequence[i];
-		}
-		return sum;
 	}
 	
 	/**
@@ -87,7 +79,7 @@ public class Code {
 
 	@Override
 	public int hashCode() {
-		return hashCode(sequence);
+		return Util.sequenceToInt(sequence);
 	}
 
 	/**

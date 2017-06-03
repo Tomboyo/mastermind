@@ -29,7 +29,7 @@ public class Response {
 	 * @return
 	 */
 	public static Response valueOf(int... sequence) {
-		int key = hashCode(sequence);
+		int key = Util.sequenceToInt(sequence);
 		
 		Response response = cache.get(key);
 		if (response == null) {
@@ -39,18 +39,10 @@ public class Response {
 		
 		return response;
 	}
-	
-	private static int hashCode(int... sequence) {
-		int sum = 0;
-		for(int i = 0; i < sequence.length; i++) {
-			sum = sum * 10 + sequence[i];
-		}
-		return sum;
-	}
 
 	@Override
 	public int hashCode() {
-		return hashCode(sequence);
+		return Util.sequenceToInt(sequence);
 	}
 
 	/**
