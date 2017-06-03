@@ -10,7 +10,7 @@ public class ResponseTest {
 
 	/**
 	 * Responses must be instantiated with an int[] representing the feedback from a guess code.
-	 * new Response(1, 1, 2, 2) generates a four-peg Response.
+	 * Response.valueOf(1, 1, 2, 2) generates a four-peg Response.
 	 * Response pegs should be numbered 0, 1, or 2.
 	 * 2 indicates a peg in a guess code was correctly placed,
 	 * 1 indicates a peg in a guess code was in the wrong position, and
@@ -20,20 +20,20 @@ public class ResponseTest {
 	 */
 	@Test
 	public void testResponse() {
-		assertNotNull(new Response(1));
-		assertNotNull(new Response(1, 2, 3));
+		assertNotNull(Response.valueOf(1));
+		assertNotNull(Response.valueOf(1, 2, 3));
 	}
 
 	/**
 	 * A response's hash code is the concatenation of its code.
-	 * Ex: new Response(new int[]{2, 2, 1,0}) should hash to 2210
+	 * Ex: Response.valueOf(new int[]{2, 2, 1,0}) should hash to 2210
 	 * This is used to key Hashtables in Tree.java
 	 */
 	@Test
 	public void testHashCode() {
-		assertEquals(1, new Response(1).hashCode());
-		assertEquals(12, new Response(12).hashCode());
-		assertEquals(456, new Response(456).hashCode());
+		assertEquals(1, Response.valueOf(1).hashCode());
+		assertEquals(12, Response.valueOf(12).hashCode());
+		assertEquals(456, Response.valueOf(456).hashCode());
 	}
 
 	/**
@@ -41,11 +41,11 @@ public class ResponseTest {
 	 */
 	@Test
 	public void testEqualsCode() {
-		assertTrue(new Response(1).equals(new Response(1)));
-		assertTrue(new Response(1, 2).equals(new Response(1, 2)));
+		assertTrue(Response.valueOf(1).equals(Response.valueOf(1)));
+		assertTrue(Response.valueOf(1, 2).equals(Response.valueOf(1, 2)));
 		
-		assertFalse(new Response(1, 2).equals(new Response(2, 1)));
-		assertFalse(new Response(2, 1).equals(new Response(1, 2)));
+		assertFalse(Response.valueOf(1, 2).equals(Response.valueOf(2, 1)));
+		assertFalse(Response.valueOf(2, 1).equals(Response.valueOf(1, 2)));
 	}
 
 }
