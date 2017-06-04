@@ -1,5 +1,6 @@
 package edu.vwc.mastermind.core;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -57,7 +58,8 @@ public class TreeFactory {
 				// do not add a child node in this case
 			} else if (answersLeft.size() == 1) {
 				// Add the correct answer node
-				root.add(correct, new Tree(answersLeft.iterator().next()));
+				root.add(group.getKey(),
+						new Tree(answersLeft.iterator().next()));
 			} else {
 				// Compare the possible outcomes and pick the "best" one
 				Tree preferred = null;
@@ -65,7 +67,12 @@ public class TreeFactory {
 						.getInstance(guessed, answersLeft)
 						.getCodes();
 				for (Code nextGuess : nextGuesses) {
-					Tree next = newTree(nextGuess, guessed, answersLeft);
+					Set<Code> nextGuessed = new LinkedHashSet<>();
+					nextGuessed.addAll(guessed);
+					Set<Code> nextAnswers = new LinkedHashSet<>();
+					nextAnswers.addAll(answersLeft);
+					nextAnswers.remove(guess);
+					Tree next = newTree(nextGuess, nextGuessed, nextAnswers);
 					if (comparator.compare(preferred, next) > 0) {
 						preferred = next;
 					}
