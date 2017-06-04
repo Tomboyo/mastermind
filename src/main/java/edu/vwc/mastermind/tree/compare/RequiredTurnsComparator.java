@@ -8,7 +8,13 @@ public class RequiredTurnsComparator implements Comparator<Tree> {
 	
 	@Override
 	public int compare(Tree a, Tree b) {
-		return a.depth() - b.depth();
+		if (a != null && b != null) {
+			return a.depth() - b.depth();
+		} else if (b != null) {
+			return 1;
+		} else {
+			return -1;
+		}
 	}
 
 }
