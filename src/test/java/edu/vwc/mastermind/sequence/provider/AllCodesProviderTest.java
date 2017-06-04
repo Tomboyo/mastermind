@@ -1,4 +1,4 @@
-package edu.vwc.mastermind.sequence;
+package edu.vwc.mastermind.sequence.provider;
 
 import static org.junit.Assert.*;
 

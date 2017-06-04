@@ -7,13 +7,13 @@ import edu.vwc.mastermind.sequence.Code;
  * @author Tomboyo
  * 
  */
-public class AllCodesProvider implements CodesProvider {
+class AllCodesProvider implements CodesProvider {
 	
 	private int colors;
 	private int pegs;
 	private Code[] codes;
 	
-	public AllCodesProvider(int colors, int pegs) {
+	AllCodesProvider(int colors, int pegs) {
 		this.colors = colors;
 		this.pegs = pegs;
 	}
