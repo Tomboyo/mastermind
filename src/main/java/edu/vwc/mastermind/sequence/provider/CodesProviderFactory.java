@@ -1,6 +1,6 @@
 package edu.vwc.mastermind.sequence.provider;
 
-import java.util.List;
+import java.util.Set;
 
 import edu.vwc.mastermind.sequence.Code;
 
@@ -19,5 +19,5 @@ public interface CodesProviderFactory {
 	 *            produce
 	 * @return A CodesProvider
 	 */
-	public CodesProvider getInstance(List<Code> blackList, List<Code> hint);
+	public CodesProvider getInstance(Set<Code> blackList, Set<Code> hint);
 }

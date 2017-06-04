@@ -1,6 +1,5 @@
 package edu.vwc.mastermind.sequence.provider;
 
-import java.util.List;
 import java.util.Set;
 
 import edu.vwc.mastermind.sequence.Code;
@@ -14,7 +13,7 @@ class AllCodesProviderFactory implements CodesProviderFactory {
 	}
 	
 	@Override
-	public CodesProvider getInstance(List<Code> blackList, List<Code> hint) {
+	public CodesProvider getInstance(Set<Code> blackList, Set<Code> hint) {
 		final Set<Code> codes = provider.getCodes();
 		for (Code code : blackList) {
 			codes.remove(code);
