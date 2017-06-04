@@ -1,40 +1,35 @@
 package edu.vwc.mastermind.tree;
 
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
+
+import edu.vwc.mastermind.sequence.Response;
 
 /**
- * Composite tree data structure for recording data. The data reference is
- * immutable; all state operations are dictated to it. This data structure is
- * both iterable and visitable.
+ * Composite tree data structure for recording data.
  * 
- * @author tomboyo
- *
- * @param <T>
- *            The type of stored data
+ * @author Tom Simmons
  */
-public class Node<T> implements Iterable<Node<T>> {
+public class Node implements Iterable<Entry<Response, Node>> {
 
-	public final T data;
+	LinkedHashMap<Response, Node> children;
 
-	LinkedList<Node<T>> children;
-
-	public Node(T data) {
-		children = new LinkedList<Node<T>>();
-		this.data = data;
+	public Node() {
+		children = new LinkedHashMap<>();
 	}
 
-	public boolean add(Node<T> child) {
-		return children.add(child);
+	public void add(Response key, Node child) {
+		children.put(key, child);
 	}
 
-	public void accept(NodeVisitor<T, ?> visitor) {
+	public void accept(NodeVisitor visitor) {
 		visitor.visit(this);
 	}
 
 	@Override
-	public Iterator<Node<T>> iterator() {
-		return children.iterator();
+	public Iterator<Entry<Response, Node>> iterator() {
+		return children.entrySet().iterator();
 	}
 
 }

@@ -4,16 +4,10 @@ package edu.vwc.mastermind.tree;
  * Interface for visiting a Node or a collection of Nodes and accessing
  * aggregate data.
  * 
- * @author Tomboyo
+ * @author Tom Simmons
  *
- * @param <T>
- *            Type of data stored by Node
- * @param <E>
- *            Type if aggregated data
  */
-public interface NodeVisitor<T, E> {
+public interface NodeVisitor {
 
-	void visit(Node<T> it);
-
-	E value();
+	void visit(Node it);
 }
