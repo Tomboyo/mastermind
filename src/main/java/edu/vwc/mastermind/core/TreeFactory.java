@@ -1,7 +1,6 @@
 package edu.vwc.mastermind.core;
 
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,7 +10,6 @@ import java.util.Map.Entry;
 import edu.vwc.mastermind.sequence.Code;
 import edu.vwc.mastermind.sequence.Response;
 import edu.vwc.mastermind.tree.Tree;
-import edu.vwc.mastermind.tree.TurnData;
 
 public class TreeFactory {
 	
