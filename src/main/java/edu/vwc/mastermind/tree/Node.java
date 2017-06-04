@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
+import edu.vwc.mastermind.sequence.Code;
 import edu.vwc.mastermind.sequence.Response;
 
 /**
@@ -13,10 +14,16 @@ import edu.vwc.mastermind.sequence.Response;
  */
 public class Node implements Iterable<Entry<Response, Node>> {
 
-	LinkedHashMap<Response, Node> children;
+	private final LinkedHashMap<Response, Node> children;
+	private final Code guess;
 
-	public Node() {
+	public Node(Code guess) {
+		this.guess = guess;
 		children = new LinkedHashMap<>();
+	}
+	
+	public Code getGuess() {
+		return guess;
 	}
 
 	public void add(Response key, Node child) {
