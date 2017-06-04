@@ -2,6 +2,7 @@ package edu.vwc.mastermind.tree;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map.Entry;
 
 import edu.vwc.mastermind.sequence.Code;
@@ -49,4 +50,16 @@ public class Tree implements Iterable<Entry<Response, Tree>> {
 		return children.entrySet().iterator();
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Tree)) return false;
+		Tree other = (Tree) o;
+		if (guess == other.guess
+				&& children.equals(other.children)) {
+			return true;
+		}
+		
+		return false;
+	}
 }
