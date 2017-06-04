@@ -1,5 +1,6 @@
 package edu.vwc.mastermind.sequence.provider;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import edu.vwc.mastermind.sequence.Code;
@@ -14,7 +15,8 @@ class AllCodesProviderFactory implements CodesProviderFactory {
 	
 	@Override
 	public CodesProvider getInstance(Set<Code> blackList, Set<Code> hint) {
-		final Set<Code> codes = provider.getCodes();
+		final Set<Code> codes = new LinkedHashSet<>(); 
+		codes.addAll(provider.getCodes());
 		for (Code code : blackList) {
 			codes.remove(code);
 		}
