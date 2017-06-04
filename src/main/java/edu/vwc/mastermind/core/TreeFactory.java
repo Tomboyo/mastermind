@@ -66,7 +66,7 @@ public class TreeFactory {
 						.getCodes();
 				for (Code nextGuess : nextGuesses) {
 					Tree next = newTree(nextGuess, guessed, answersLeft);
-					if (comparator.compare(preferred, next) < 0) {
+					if (comparator.compare(preferred, next) > 0) {
 						preferred = next;
 					}
 				}
