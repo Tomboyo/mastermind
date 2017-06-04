@@ -7,12 +7,9 @@ import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Executors;
 
 import edu.vwc.mastermind.sequence.Code;
-import edu.vwc.mastermind.sequence.CodesFilter;
-import edu.vwc.mastermind.sequence.CodesProvider;
-import edu.vwc.mastermind.tree.PreorderIterator;
+import edu.vwc.mastermind.sequence.provider.CodesProvider;
 import edu.vwc.mastermind.tree.Tree;
 import edu.vwc.mastermind.tree.TreeVisitor;
-import edu.vwc.mastermind.tree.TurnData;
 
 /**
  * Responsible for running the simulation. Dependencies are injected in the

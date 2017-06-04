@@ -6,8 +6,8 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import edu.vwc.mastermind.sequence.AllCodesProvider;
 import edu.vwc.mastermind.sequence.Code;
+import edu.vwc.mastermind.sequence.provider.AllCodesProvider;
 
 import static org.hamcrest.CoreMatchers.*;
 

@@ -9,12 +9,14 @@ import java.util.Map.Entry;
 
 import edu.vwc.mastermind.sequence.Code;
 import edu.vwc.mastermind.sequence.Response;
+import edu.vwc.mastermind.sequence.provider.CodesProviderFactory;
 import edu.vwc.mastermind.tree.Tree;
 
 public class TreeFactory {
 	
 	private Response correct;
 	private Comparator<Tree> comparator;
+	private CodesProviderFactory guessProvider;
 	
 	// private GuessProvider
 	
@@ -22,8 +24,9 @@ public class TreeFactory {
 		
 	}
 	
-	public Tree newTree(Code guess, List<Code> answers) {
+	public Tree newTree(Code guess, List<Code> guessed, List<Code> answers) {
 		Tree root = new Tree(guess);
+		guessed.add(guess);
 		
 		/*
 		 * Compare guess to answers, then group the answers by the response they
@@ -55,10 +58,10 @@ public class TreeFactory {
 			} else {
 				// Compare the possible outcomes and pick the "best" one
 				Tree preferred = null;
-				// TODO: DI guess picker. For now, we pick among possible
-				// answers, which is sub-optimal.
-				for (Code nextGuess : answersLeft) {
-					Tree next = newTree(nextGuess, answersLeft);
+				Code[] nextGuesses = guessProvider.getInstance(guessed, answersLeft)
+						.getCodes();
+				for (Code nextGuess : nextGuesses) {
+					Tree next = newTree(nextGuess, guessed, answersLeft);
 					if (comparator.compare(preferred, next) < 0) {
 						preferred = next;
 					}

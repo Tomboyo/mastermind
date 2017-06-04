@@ -1,4 +1,6 @@
-package edu.vwc.mastermind.sequence;
+package edu.vwc.mastermind.sequence.provider;
+
+import edu.vwc.mastermind.sequence.Code;
 
 /**
  * Responsible for producing collections of codes, such as those necessary to

@@ -1,4 +1,6 @@
-package edu.vwc.mastermind.sequence;
+package edu.vwc.mastermind.sequence.provider;
+
+import edu.vwc.mastermind.sequence.Code;
 
 /**
  * Generates all Code permutations (colors^pegs codes in total)
