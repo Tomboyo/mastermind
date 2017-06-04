@@ -4,6 +4,11 @@ import java.util.List;
 
 import edu.vwc.mastermind.sequence.Code;
 
+/**
+ * Creates context-sensitive CodeProviders
+ * @author Tom Simmons
+ *
+ */
 public interface CodesProviderFactory {
 
 	/**
