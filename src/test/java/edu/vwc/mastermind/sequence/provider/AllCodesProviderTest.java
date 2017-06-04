@@ -31,16 +31,7 @@ public class AllCodesProviderTest {
 		
 		assertEquals(9, actual.size());
 		
-		assertThat(actual, hasItems(
-				Code.valueOf(0, 0),
-				Code.valueOf(0, 1),
-				Code.valueOf(0, 2),
-				Code.valueOf(1, 0),
-				Code.valueOf(1, 1),
-				Code.valueOf(1, 2),
-				Code.valueOf(2, 0),
-				Code.valueOf(2, 1),
-				Code.valueOf(2, 2)));
+		assertEquals(TestUtil.canonicalSet(), actual);
 	}
 
 }
