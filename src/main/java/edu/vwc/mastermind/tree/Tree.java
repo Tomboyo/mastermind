@@ -44,6 +44,10 @@ public class Tree implements Iterable<Entry<Response, Tree>> {
 	public int depth() {
 		return depth;
 	}
+	
+	public int size() {
+		return children.size();
+	}
 
 	@Override
 	public Iterator<Entry<Response, Tree>> iterator() {
@@ -62,4 +66,33 @@ public class Tree implements Iterable<Entry<Response, Tree>> {
 		
 		return false;
 	}
+	
+	@Override
+	public String toString() {
+		return toString("");
+	}
+	
+	private String toString(String prefix) {
+		StringBuilder builder;
+		
+		if (children.size() == 0) {
+			builder = new StringBuilder(prefix);
+			builder.append(guess);
+			builder.append(System.lineSeparator());
+		} else {
+			builder = new StringBuilder();
+			for (Entry<Response, Tree> entry : children.entrySet()) {
+				StringBuilder prefixBuilder = new StringBuilder();
+				prefixBuilder.append(prefix)
+						.append(guess)
+						.append(entry.getKey())
+						.append("->");
+				builder.append(entry.getValue().toString(
+						prefixBuilder.toString()));
+			}
+		}
+		
+		return builder.toString();
+	}
+
 }
