@@ -1,23 +1,23 @@
 package edu.vwc.mastermind.sequence.provider;
 
+import java.util.Set;
+
 import edu.vwc.mastermind.sequence.Code;
 
 /**
  * Responsible for producing collections of codes, such as those necessary to
- * seed a simulation, or subsets of full enumerations used to produce logically
- * complete (not redundant) games.
+ * seed a simulation.
  * 
- * @author Tomboyo
+ * @author Tom Simmons
  *
  */
 public interface CodesProvider {
 
 	/**
-	 * Get a set of Codes. This might be a complete enumeration of all codes
-	 * possible in a game, or some logical subset.
+	 * Get a set of Codes.
 	 * 
-	 * @return collection of Codes
-	 */
-	Code[] getCodes();
+	 * @return A set of Codes
+	 */	
+	Set<Code> getCodes();
 
 }

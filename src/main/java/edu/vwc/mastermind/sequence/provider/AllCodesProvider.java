@@ -1,5 +1,8 @@
 package edu.vwc.mastermind.sequence.provider;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import edu.vwc.mastermind.sequence.Code;
 
 /**
@@ -11,7 +14,7 @@ class AllCodesProvider implements CodesProvider {
 	
 	private int colors;
 	private int pegs;
-	private Code[] codes;
+	private Set<Code> codes;
 	
 	AllCodesProvider(int colors, int pegs) {
 		this.colors = colors;
@@ -27,14 +30,15 @@ class AllCodesProvider implements CodesProvider {
 	 * @return Code collection containing colors^pegs codes.
 	 */
 	@Override
-	public Code[] getCodes() {
+	public Set<Code> getCodes() {
 		if (codes != null) {
 			return codes;
 		}
 		
 		int numCodes = (int) Math.pow(colors,  pegs);
-		codes = new Code[numCodes];
-		int codesIndex = 0;
+		// See https://stackoverflow.com/questions/7115445/what-is-the-optimal-capacity-and-load-factor-for-a-fixed-size-hashmap
+		// We know the precise size, so this seems appropriate.
+		codes = new LinkedHashSet<>(numCodes, 1);
 
 		// Tracker holds the code we are generating.
 		// We treat its 'pegs' like base-<colors> numbers.
@@ -42,7 +46,7 @@ class AllCodesProvider implements CodesProvider {
 		int max_digit = colors - 1;
 
 		for (int i = 0; i < numCodes; i++) {
-			codes[codesIndex++] = Code.valueOf(tracker.clone());
+			codes.add(Code.valueOf(tracker.clone()));
 			
 			// Increment the 0th digit
 			tracker[0] ++;

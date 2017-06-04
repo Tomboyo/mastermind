@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import edu.vwc.mastermind.sequence.Code;
 import edu.vwc.mastermind.sequence.Response;
@@ -58,7 +59,7 @@ public class TreeFactory {
 			} else {
 				// Compare the possible outcomes and pick the "best" one
 				Tree preferred = null;
-				Code[] nextGuesses = guessProvider.getInstance(guessed, answersLeft)
+				Set<Code> nextGuesses = guessProvider.getInstance(guessed, answersLeft)
 						.getCodes();
 				for (Code nextGuess : nextGuesses) {
 					Tree next = newTree(nextGuess, guessed, answersLeft);

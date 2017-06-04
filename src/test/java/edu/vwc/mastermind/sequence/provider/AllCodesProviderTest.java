@@ -3,6 +3,7 @@ package edu.vwc.mastermind.sequence.provider;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -26,11 +27,11 @@ public class AllCodesProviderTest {
 		provider = new AllCodesProvider(3, 2);
 		
 		// get the collection
-		Code[] actual = provider.getCodes();
+		Set<Code> actual = provider.getCodes();
 		
-		assertEquals(9, actual.length);
+		assertEquals(9, actual.size());
 		
-		assertThat(Arrays.asList(actual), hasItems(
+		assertThat(actual, hasItems(
 				Code.valueOf(0, 0),
 				Code.valueOf(0, 1),
 				Code.valueOf(0, 2),
