@@ -10,8 +10,8 @@ import edu.vwc.mastermind.sequence.Code;
 import edu.vwc.mastermind.sequence.CodesFilter;
 import edu.vwc.mastermind.sequence.CodesProvider;
 import edu.vwc.mastermind.tree.PreorderIterator;
-import edu.vwc.mastermind.tree.Node;
-import edu.vwc.mastermind.tree.NodeVisitor;
+import edu.vwc.mastermind.tree.Tree;
+import edu.vwc.mastermind.tree.TreeVisitor;
 import edu.vwc.mastermind.tree.TurnData;
 
 /**
@@ -39,9 +39,9 @@ public class Controller {
 	// Configuration
 	private CodesProvider allCodes;
 	private CodesProvider firstGuesses;
-	private Comparator<Node<TurnData>> branchSelector;
-	private CompletionService<Node<TurnData>> cs;
-	private Node<TurnData> result;
+	private Comparator<Tree<TurnData>> branchSelector;
+	private CompletionService<Tree<TurnData>> cs;
+	private Tree<TurnData> result;
 
 	/**
 	 * Configure the controller with simulation dependencies.
@@ -56,12 +56,12 @@ public class Controller {
 	 *            shortest game on average, shortest game absolutely)
 	 */
 	public Controller(CodesProvider allCodes, CodesProvider firstGuesses,
-			Comparator<Node<TurnData>> branchSelector) {
+			Comparator<Tree<TurnData>> branchSelector) {
 		this.allCodes = allCodes;
 		this.firstGuesses = firstGuesses;
 		this.branchSelector = branchSelector;
 
-		cs = new ExecutorCompletionService<Node<TurnData>>(
+		cs = new ExecutorCompletionService<Tree<TurnData>>(
 				Executors.newFixedThreadPool(
 						Runtime.getRuntime().availableProcessors()));
 
@@ -87,9 +87,9 @@ public class Controller {
 		}
 
 		// Select the best branch
-		Node<TurnData> localBest = null;
+		Tree<TurnData> localBest = null;
 		for (int i = 0; i < firstGuessSubset.length; i++) {
-			Node<TurnData> gameTree = cs.take().get();
+			Tree<TurnData> gameTree = cs.take().get();
 			// If the gameTree is "better"...
 			if (branchSelector.compare(gameTree, localBest) < 0) {
 				localBest = gameTree;
@@ -99,11 +99,11 @@ public class Controller {
 		result = localBest;
 	}
 
-	public <E> E processResult (NodeVisitor<TurnData, E> visitor) {
+	public <E> E processResult (TreeVisitor<TurnData, E> visitor) {
 		if (result == null)
 			throw new IllegalStateException("Result has not yet been computed");
 
-		PreorderIterator<Node<TurnData>> iter = new PreorderIterator<>(result);
+		PreorderIterator<Tree<TurnData>> iter = new PreorderIterator<>(result);
 		while (iter.hasNext()) {
 			visitor.visit(iter.next());
 		}

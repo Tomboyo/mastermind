@@ -12,12 +12,12 @@ import edu.vwc.mastermind.sequence.Response;
  * 
  * @author Tom Simmons
  */
-public class Node implements Iterable<Entry<Response, Node>> {
+public class Tree implements Iterable<Entry<Response, Tree>> {
 
-	private final LinkedHashMap<Response, Node> children;
+	private final LinkedHashMap<Response, Tree> children;
 	private final Code guess;
 
-	public Node(Code guess) {
+	public Tree(Code guess) {
 		this.guess = guess;
 		children = new LinkedHashMap<>();
 	}
@@ -26,16 +26,16 @@ public class Node implements Iterable<Entry<Response, Node>> {
 		return guess;
 	}
 
-	public void add(Response key, Node child) {
+	public void add(Response key, Tree child) {
 		children.put(key, child);
 	}
 
-	public void accept(NodeVisitor visitor) {
+	public void accept(TreeVisitor visitor) {
 		visitor.visit(this);
 	}
 
 	@Override
-	public Iterator<Entry<Response, Node>> iterator() {
+	public Iterator<Entry<Response, Tree>> iterator() {
 		return children.entrySet().iterator();
 	}
 
