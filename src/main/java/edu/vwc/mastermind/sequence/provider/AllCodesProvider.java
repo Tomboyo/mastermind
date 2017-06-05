@@ -11,14 +11,11 @@ import edu.vwc.mastermind.sequence.Code;
  * 
  */
 class AllCodesProvider implements CodesProvider {
-	
-	private int colors;
-	private int pegs;
+
 	private Set<Code> codes;
 	
 	AllCodesProvider(int colors, int pegs) {
-		this.colors = colors;
-		this.pegs = pegs;
+		generateCodes(colors, pegs);
 	}
 
 	/**
@@ -31,10 +28,10 @@ class AllCodesProvider implements CodesProvider {
 	 */
 	@Override
 	public Set<Code> getCodes() {
-		if (codes != null) {
-			return codes;
-		}
-		
+		return codes;
+	}
+	
+	private void generateCodes(int colors, int pegs) {
 		int numCodes = (int) Math.pow(colors,  pegs);
 		// See https://stackoverflow.com/questions/7115445/what-is-the-optimal-capacity-and-load-factor-for-a-fixed-size-hashmap
 		// We know the precise size, so this seems appropriate.
@@ -65,8 +62,6 @@ class AllCodesProvider implements CodesProvider {
 				tracker[carry_index] ++;
 			}
 		}
-		
-		return codes;
 	}
 
 }
