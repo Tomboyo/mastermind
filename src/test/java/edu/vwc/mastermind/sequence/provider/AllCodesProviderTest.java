@@ -2,15 +2,12 @@ package edu.vwc.mastermind.sequence.provider;
 
 import static org.junit.Assert.*;
 
-import java.util.Arrays;
 import java.util.Set;
 
 import org.junit.Test;
 
 import edu.vwc.mastermind.sequence.Code;
 import edu.vwc.mastermind.sequence.provider.AllCodesProvider;
-
-import static org.hamcrest.CoreMatchers.*;
 
 public class AllCodesProviderTest {
 	

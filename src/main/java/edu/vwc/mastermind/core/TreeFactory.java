@@ -1,6 +1,5 @@
 package edu.vwc.mastermind.core;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -28,6 +27,22 @@ public class TreeFactory {
 		this.guessProviderFactory = guessProviderFactory;
 	}
 	
+	/**
+	 * Determine the best moves to make in order to win a game of mastermind.
+	 * The comparator this class is configured with determines what the "best"
+	 * game looks like (e.g, shortest turns to win, or shortest average turns to
+	 * win). The evaluation begins with the given guess, will not repeat any
+	 * codes that have already been guessed, and will eventually reach all of
+	 * the provided answers.
+	 * 
+	 * @param guess
+	 *            The first guess to make in evaluating the game
+	 * @param guessed
+	 *            Codes that have already been guessed
+	 * @param answers
+	 *            Possible answers remaining
+	 * @return The optimized tree of moves
+	 */
 	public Tree newTree(Code guess, Set<Code> guessed, Set<Code> answers) {
 		Tree root = new Tree(guess);
 		guessed.add(guess);

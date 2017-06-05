@@ -1,7 +1,6 @@
 package edu.vwc.mastermind.core;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -10,8 +9,6 @@ import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Executors;
-
-import org.omg.CORBA.Environment;
 
 import edu.vwc.mastermind.sequence.Code;
 import edu.vwc.mastermind.sequence.Response;
