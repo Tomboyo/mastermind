@@ -1,110 +1,102 @@
 package edu.vwc.mastermind.core;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Executors;
 
+import org.omg.CORBA.Environment;
+
 import edu.vwc.mastermind.sequence.Code;
+import edu.vwc.mastermind.sequence.Response;
 import edu.vwc.mastermind.sequence.provider.CodesProvider;
+import edu.vwc.mastermind.sequence.provider.ProviderFactories;
+import edu.vwc.mastermind.sequence.provider.Providers;
 import edu.vwc.mastermind.tree.Tree;
-import edu.vwc.mastermind.tree.TreeVisitor;
 
 /**
  * Responsible for running the simulation. Dependencies are injected in the
- * constructor, then the game in run in a multithreaded environment. branches
- * are started for each initial guess, and those branches are compared to one
- * another once resolved. The optimal branch is kept for further processing.
- * Each controller instance should be responsible for the simulation of exactly
- * one game.
+ * constructor, then the game is run in a multi-threaded environment.
  * 
- * TODO: Ideally this task can be distributed across multiple machines. This is
- * beyond the scope of my current knowledge (and hardware access) but is
- * absolutely on the chalkboard.
- * 
- * TODO: With Node/TUrnData/COmparator/Visitor the way they are, it seems like
- * we've created families of objects that need to work in concert. An abstract
- * factory implementation may be in order, and in any case the Controller needs
- * to be made agnostic to their types.
- * 
- * @author Tomboyo
+ * @author Tom Simmons
  *
  */
-public class Controller {
+class Controller {
 
-	// Configuration
-	private CodesProvider allCodes;
-	private CodesProvider firstGuesses;
-	private Comparator<Tree<TurnData>> branchSelector;
-	private CompletionService<Tree<TurnData>> cs;
-	private Tree<TurnData> result;
+	private final int colors, pegs;
+	private final CompletionService<Tree> cs;
+	private final Comparator<Tree> comparator;
 
-	/**
-	 * Configure the controller with simulation dependencies.
-	 * 
-	 * @param codesProvider
-	 *            Instance to generate all the codes used by the game.
-	 * @param firstGuessFilter
-	 *            Determines which codes to use to make the first guesses of the
-	 *            game, filtered from codesProvider
-	 * @param branchSelector
-	 *            Logic to decide what the optimal branch looks like (e.g,
-	 *            shortest game on average, shortest game absolutely)
-	 */
-	public Controller(CodesProvider allCodes, CodesProvider firstGuesses,
-			Comparator<Tree<TurnData>> branchSelector) {
-		this.allCodes = allCodes;
-		this.firstGuesses = firstGuesses;
-		this.branchSelector = branchSelector;
-
-		cs = new ExecutorCompletionService<Tree<TurnData>>(
-				Executors.newFixedThreadPool(
-						Runtime.getRuntime().availableProcessors()));
-
-		result = null;
+	Controller(int colors, int pegs, Comparator<Tree> comparator) {
+		this.colors = colors;
+		this.pegs = pegs;
+		this.comparator = comparator;
+		
+		cs = new ExecutorCompletionService<Tree>(
+				Executors.newFixedThreadPool(Runtime.getRuntime()
+						.availableProcessors()));
 	}
-
+	
 	/**
-	 * Begins simulation based on constructor parameters.
+	 * Builds a strategy tree for a game of mastermind. Note that repeated calls
+	 * to this method can return entirely different Tree structures. The only
+	 * guarantee is that for any Trees u and v produced by this method with the
+	 * same parameters, comparator.compare(u, v) == 0.
 	 * 
 	 * @throws ExecutionException
 	 *             If a simulation branch encounters error
 	 * @throws InterruptedException
 	 *             If a simulation branch is interrupted
 	 */
-	public synchronized void run()
+	public Tree simulate()
 			throws ExecutionException, InterruptedException {
-		Code[] firstGuessSubset = firstGuesses.getCodes();
-
-		// Start generation of game trees
-		for (Code guess : firstGuessSubset) {
-			cs.submit(new Branch(guess, allCodes.getCodes(), branchSelector,
-					new boolean[allCodes.getCodes().length]));
-		}
-
-		// Select the best branch
-		Tree<TurnData> localBest = null;
-		for (int i = 0; i < firstGuessSubset.length; i++) {
-			Tree<TurnData> gameTree = cs.take().get();
-			// If the gameTree is "better"...
-			if (branchSelector.compare(gameTree, localBest) < 0) {
-				localBest = gameTree;
-			}
-		}
-
-		result = localBest;
-	}
-
-	public <E> E processResult (TreeVisitor<TurnData, E> visitor) {
-		if (result == null)
-			throw new IllegalStateException("Result has not yet been computed");
-
-		PreorderIterator<Tree<TurnData>> iter = new PreorderIterator<>(result);
-		while (iter.hasNext()) {
-			visitor.visit(iter.next());
+		
+		int[] a = new int[pegs];
+		Arrays.fill(a, 2);
+		Response correct = Response.valueOf(a);
+		
+		CodesProvider allCodesProvider = Providers.allCodes(colors, pegs);
+		
+		int count = 0;
+		for (Code guess : allCodesProvider.getCodes()) {
+			TreeFactory factory = new TreeFactory(correct, comparator,
+					ProviderFactories.allCodes(allCodesProvider));
+			cs.submit(new Branch(factory,guess, allCodesProvider.getCodes()));
+			count++;
 		}
 		
-		return visitor.value();
+		Tree result = null;
+		for (int i = 0; i < count; i++) {
+			Tree next = cs.take().get();
+			if (comparator.compare(next,  result) < 0) {
+				result = next;
+			}
+		}
+		
+		return result;
+	}
+	
+	private class Branch implements Callable<Tree> {
+		private final TreeFactory factory;
+		private final Code guess;
+		private final Set<Code> answers;
+		
+		public Branch(TreeFactory factory, Code guess, Set<Code> answers) {
+			this.factory = factory;
+			this.guess = guess;
+			this.answers = answers;
+		}
+		
+		public Tree call() {
+			return factory.newTree(guess,
+					new LinkedHashSet<>(),
+					answers);
+		}
 	}
 }
