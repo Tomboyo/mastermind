@@ -1,9 +1,7 @@
 package edu.vwc.mastermind.core;
 
-import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 
@@ -22,7 +20,8 @@ public class TreeFactoryTest {
 	@Test
 	public void test() {
 		Comparator<Tree> comparator = Comparators.minRequiredTurns();
-		CodesProviderFactory providerFactory = ProviderFactories.allCodes(2, 2);
+		CodesProviderFactory providerFactory = ProviderFactories.allCodes(
+				Providers.allCodes(2, 2));
 		
 		TreeFactory factory = new TreeFactory(
 				Response.valueOf(2, 2), comparator, providerFactory);
@@ -36,7 +35,9 @@ public class TreeFactoryTest {
 		 * 00[01]->10[22].
 		 * 00[01]->10[11]->01[22].
 		 * 00[00]->11[22].
-		 * The 00[01] branch depends on the return order of the comparator.
+		 * 
+		 * It would also be correct for the 00[01]->10 branch to be 00[10]->01,
+		 * since both are as fast. It depends on the comparator.
 		 */
 		Tree expected  = new Tree(Code.valueOf(0, 0));
 		Tree a = new Tree(Code.valueOf(1, 0));

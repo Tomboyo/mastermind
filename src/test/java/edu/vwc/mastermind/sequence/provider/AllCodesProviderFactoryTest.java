@@ -14,7 +14,8 @@ public class AllCodesProviderFactoryTest {
 
 	@Test
 	public void testGetInstance() {
-		AllCodesProviderFactory factory = new AllCodesProviderFactory(3, 2);
+		AllCodesProviderFactory factory = new AllCodesProviderFactory(
+				Providers.allCodes(3, 2));
 		
 		/*
 		 * The provider given no blacklist will return all the codes.

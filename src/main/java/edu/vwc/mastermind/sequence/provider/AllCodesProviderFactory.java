@@ -7,10 +7,10 @@ import edu.vwc.mastermind.sequence.Code;
 
 class AllCodesProviderFactory implements CodesProviderFactory {
 	
-	private final AllCodesProvider provider;
+	private final CodesProvider provider;
 	
-	AllCodesProviderFactory(int colors, int pegs) {
-		provider = new AllCodesProvider(colors, pegs);
+	AllCodesProviderFactory(CodesProvider provider) {
+		this.provider = provider;
 	}
 	
 	@Override
