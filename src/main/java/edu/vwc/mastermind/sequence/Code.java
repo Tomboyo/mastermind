@@ -23,14 +23,24 @@ public class Code {
 		int key = Util.sequenceToInt(sequence);
 		Code code = cache.get(key);
 		if (code == null) {
-			code = new Code(sequence);
+			code = new Code(Arrays.copyOf(sequence, sequence.length));
 			cache.put(key, code);
 		}
 		return code;
 	}
 	
 	/**
-	 * Get the feedback for this code when compared against a given key
+	 * Get a view of this Code as an integer array. Note that modifying the
+	 * array will have no impact on the code instance.
+	 * 
+	 * @return An array representation of this code
+	 */
+	public int[] toArray() {
+		return Arrays.copyOf(sequence, sequence.length);
+	}
+	
+	/**
+	 * Get the feedback for this code when compared against a given answer
 	 * @param answer
 	 *            Code to compare this one against
 	 * @return A Response object indicating the results of the comparison
@@ -40,36 +50,36 @@ public class Code {
 	 */
 	public Response compareTo(Code answer) throws IllegalArgumentException {
 		if (answer.sequence.length != sequence.length) {
-			throw new IllegalArgumentException("Length of Codes are unequal.");
+			throw new IllegalArgumentException("Lengths of Codes are unequal");
 		}
 
 		// 0: no feedback
 		// 1: misplaced peg
 		// 2: correct peg
 		int[] response = new int[sequence.length];
-		boolean[] gmask = new boolean[sequence.length];
-		boolean[] cmask = new boolean[sequence.length];
+		boolean[] this_mask = new boolean[sequence.length];
+		boolean[] answer_mask = new boolean[sequence.length];
 		short index = 0;
 
 		// Pass 1: Count correct pegs
 		for (int i = 0; i < sequence.length; i++) {
 			if (sequence[i] == answer.sequence[i]) {
 				response[index++] = 2;
-				gmask[i] = true;
-				cmask[i] = true;
+				this_mask[i] = true;
+				answer_mask[i] = true;
 			}
 		}
 
 		// Pass 2: Count misplaced pegs
 		for (int i = 0; i < sequence.length; i++) {
-			if (gmask[i] != false) continue;
+			if (this_mask[i] == true) continue;
 
 			for (int j = 0; j < answer.sequence.length; j++) {
-				if (cmask[j] != false) continue;
+				if (answer_mask[j] == true) continue;
 
 				if (sequence[i] == answer.sequence[j]) {
 					response[index++] = 1;
-					cmask[j] = true;
+					answer_mask[j] = true;
 				}
 			}
 		}
@@ -89,9 +99,7 @@ public class Code {
 	@Override
 	public final boolean equals(Object other) {
 		if (other == this) return true;
-		if (other == null) return false;
-		if (this.getClass() != other.getClass()) return false;
-
+		if (!(other instanceof Code)) return false;
 		return Arrays.equals(sequence, ((Code) other).sequence);
 	}
 	
