@@ -2,6 +2,7 @@ package edu.vwc.mastermind.sequence;
 
 import static org.junit.Assert.*;
 
+import java.util.Arrays;
 import java.util.Random;
 
 import org.junit.Test;
@@ -63,41 +64,49 @@ public class CodeTest {
 		
 		// Code's internal representation is detached from the array view it
 		// returns, so altering asArray does not alter Code
-		assertEquals(code.toArray(), new int[] { 1, 2, 3 });
+		assertTrue(Arrays.equals(code.toArray(), new int[] { 1, 2, 3 }));
 	}
 
 	@Test
 	public void testEquality() {
-		Random rand = new Random();
-		final int maxColor = 9;
-		final int maxPegs = 10;
+		Code code1 = Code.valueOf(1, 9, 3, 1);
+		Code code2 = Code.valueOf(1, 9, 3, 1);
 		
-		// Make codes with (maxColor + 1) colors and between 1 and maxPegs pegs.
-		for (int pegs = 1; pegs <= maxPegs; pegs++) {
-			int[] sequence = new int[pegs];
-			for (int peg = 0; peg < sequence.length; peg++) {
-				for (int i = 0; i <= maxColor; i++) {
-					sequence[peg] = i;
-				}
+		// All instances are canonical and therefore may be compared with object
+		// equality
+		assertTrue(code1 == code2);
+		assertTrue(code1.equals(code2));
+		assertTrue(code1.hashCode() == code2.hashCode());
+		
+		/*
+		 * Create and compare some random codes
+		 */
+		Random rand = new Random();
+		for (int i = 0; i < 100; i++) {
+			final int length = rand.nextInt(10) + 1;
+			final int colors = rand.nextInt(1000) + 1;
+			
+			// Create a sequence based on the random parameters
+			int[] sequence = new int[length];
+			for (int j = 0; j < length; j++) {
+				sequence[j] = rand.nextInt(colors) + 1;
 			}
 			
-			// Because instances are canonical, object equality can be used
-			Code codeA = Code.valueOf(sequence);
-			Code codeB = Code.valueOf(sequence);
-			assertTrue(codeA == codeB);
-			assertTrue(codeA.equals(codeA));
-			assertTrue(codeA.equals(codeB));
-			assertTrue(codeA.hashCode() == codeA.hashCode());
-			assertTrue(codeA.hashCode() == codeB.hashCode());
+			code1 = Code.valueOf(sequence);
+			code2 = Code.valueOf(sequence);
+			assertTrue(code1 == code2);
+			assertTrue(code1.equals(code2));
+			assertTrue(code1.hashCode() == code2.hashCode());
 			
-			// Change some of the pegs
-			int numJitter = rand.nextInt(pegs - 1) + 1;
-			for (int i = 0; i < numJitter; i++) {
-				sequence[rand.nextInt(pegs)] = maxColor + 1;
-			}
+			// A Code can have negative pegs, but the above logic never uses
+			// them. This therefore makes the codes unequal.
+			sequence[rand.nextInt(length)] = -1;
+			code2 = Code.valueOf(sequence);
 			
-			assertFalse(codeA == Code.valueOf(sequence));
-			assertFalse(codeA.equals(Code.valueOf(sequence)));
+			assertFalse(String.format("%s == %s", code1, code2),
+					code1 == code2);
+			assertFalse(String.format("%s .equals %s", code1, code2),
+					code1.equals(code2));
 		}
 	}
 
