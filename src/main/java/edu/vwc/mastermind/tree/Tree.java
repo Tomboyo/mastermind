@@ -3,6 +3,7 @@ package edu.vwc.mastermind.tree;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import edu.vwc.mastermind.sequence.Code;
 import edu.vwc.mastermind.sequence.Response;
@@ -35,9 +36,13 @@ public class Tree implements Iterable<Entry<Response, Tree>> {
 		children.put(key, child);
 		this.depth += child.depth;
 	}
-
-	public void accept(TreeVisitor visitor) {
-		visitor.visit(this);
+	
+	public Tree get(Response key) {
+		return children.get(key);
+	}
+	
+	public Set<Entry<Response, Tree>> children() {
+		return children.entrySet();
 	}
 	
 	public int depth() {
