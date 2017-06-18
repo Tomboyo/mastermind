@@ -18,9 +18,11 @@ public class Response {
 	private static Map<Integer, Response> cache = new HashMap<>();
 	
 	private int[] sequence;
+	private int hash;
 
 	private Response(int... sequence) {
-		this.sequence = sequence;
+		this.sequence = sequence.clone();
+		this.hash = hash(this.sequence);
 	}
 	
 	/**
@@ -29,12 +31,15 @@ public class Response {
 	 * @return
 	 */
 	public static Response valueOf(int... sequence) {
-		int key = Util.sequenceToInt(sequence);
-		
+		int key = hash(sequence);
 		Response response = cache.get(key);
 		if (response == null) {
-			response = new Response(sequence);
-			cache.put(key, response);
+			synchronized (cache) {
+				if ((response = cache.get(key)) == null) {
+					response = new Response(sequence);
+					cache.put(key, response);
+				}
+			}
 		}
 		
 		return response;
@@ -42,7 +47,7 @@ public class Response {
 
 	@Override
 	public int hashCode() {
-		return Util.sequenceToInt(sequence);
+		return hash;
 	}
 
 	/**
@@ -61,5 +66,13 @@ public class Response {
 	@Override
 	public String toString() {
 		return Arrays.toString(sequence);
+	}
+	
+	private static int hash(int... sequence) {
+		int h = 17;
+		for (int i : sequence) {
+			h = 31 * h + i;
+		}
+		return h;
 	}
 }

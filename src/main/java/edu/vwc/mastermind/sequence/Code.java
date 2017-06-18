@@ -13,18 +13,24 @@ public class Code {
 
 	private static Map<Integer, Code> cache = new HashMap<>();
 	
-	private int[] sequence;
+	private final int[] sequence;
+	private final int hash;
 
 	private Code(int... sequence) {
-		this.sequence = sequence;
+		this.sequence = sequence.clone();
+		this.hash = hash(this.sequence);
 	}
 	
 	public static Code valueOf(int... sequence) {
-		int key = Util.sequenceToInt(sequence);
+		int key = hash(sequence);
 		Code code = cache.get(key);
 		if (code == null) {
-			code = new Code(Arrays.copyOf(sequence, sequence.length));
-			cache.put(key, code);
+			synchronized (cache) {
+				if ((code = cache.get(key)) == null) {
+					code = new Code(sequence);
+					cache.put(key, code);
+				}
+			}
 		}
 		return code;
 	}
@@ -36,21 +42,20 @@ public class Code {
 	 * @return An array representation of this code
 	 */
 	public int[] toArray() {
-		return Arrays.copyOf(sequence, sequence.length);
+		return sequence.clone();
 	}
 	
 	/**
 	 * Get the feedback for this code when compared against a given answer
+	 * 
 	 * @param answer
 	 *            Code to compare this one against
 	 * @return A Response object indicating the results of the comparison
-	 * @throws IllegalArgumentException
-	 *             When this and the answer code can not be compared (their
-	 *             lengths differ)
 	 */
-	public Response compareTo(Code answer) throws IllegalArgumentException {
+	public Response compareTo(Code answer) {
 		if (answer.sequence.length != sequence.length) {
-			throw new IllegalArgumentException("Lengths of Codes are unequal");
+			throw new IllegalArgumentException(
+					"Codes of unequal length are incomperable");
 		}
 
 		// 0: no feedback
@@ -89,7 +94,7 @@ public class Code {
 
 	@Override
 	public int hashCode() {
-		return Util.sequenceToInt(sequence);
+		return hash;
 	}
 
 	/**
@@ -106,5 +111,13 @@ public class Code {
 	@Override
 	public String toString() {
 		return Arrays.toString(sequence);
+	}
+	
+	private static int hash(int... sequence) {
+		int h = 17;
+		for (int i : sequence) {
+			h = 31 * h + i;
+		}
+		return h;
 	}
 }

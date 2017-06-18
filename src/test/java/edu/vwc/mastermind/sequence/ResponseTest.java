@@ -25,18 +25,6 @@ public class ResponseTest {
 	}
 
 	/**
-	 * A response's hash code is the concatenation of its code.
-	 * Ex: Response.valueOf(new int[]{2, 2, 1,0}) should hash to 2210
-	 * This is used to key Hashtables in Tree.java
-	 */
-	@Test
-	public void testHashCode() {
-		assertEquals(1, Response.valueOf(1).hashCode());
-		assertEquals(12, Response.valueOf(12).hashCode());
-		assertEquals(456, Response.valueOf(456).hashCode());
-	}
-
-	/**
 	 * Verify that two responses are considered equal if their pegs match (by length and color)
 	 */
 	@Test

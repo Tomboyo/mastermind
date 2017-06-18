@@ -43,7 +43,7 @@ class AllCodesProvider implements CodesProvider {
 		int max_digit = colors - 1;
 
 		for (int i = 0; i < numCodes; i++) {
-			codes.add(Code.valueOf(tracker.clone()));
+			codes.add(Code.valueOf(tracker));
 			
 			// Increment the 0th digit
 			tracker[0] ++;

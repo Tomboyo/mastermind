@@ -28,6 +28,6 @@ class TestUtil {
 	 * @return The set
 	 */
 	static Set<Code> canonicalSet() {
-		return TEST_SET;
+		return new LinkedHashSet<>(TEST_SET);
 	}
 }
