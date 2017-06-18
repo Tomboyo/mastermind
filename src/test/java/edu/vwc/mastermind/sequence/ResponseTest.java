@@ -9,31 +9,26 @@ import static org.junit.Assert.*;
 public class ResponseTest {
 
 	/**
-	 * Responses must be instantiated with an int[] representing the feedback from a guess code.
-	 * Response.valueOf(1, 1, 2, 2) generates a four-peg Response.
-	 * Response pegs should be numbered 0, 1, or 2.
-	 * 2 indicates a peg in a guess code was correctly placed,
-	 * 1 indicates a peg in a guess code was in the wrong position, and
-	 * 0 indicates no particular feedback (this peg of the response says nothing)
-	 * Note that Responses should have pegs ordered in descending number: 2, 2, 1, 0, 0
-	 * Responses code format corresponds to traditional mastermind rules.
+	 * {@link Response#valueOf} returns the canonical instance of the requested
+	 * Response, so instances acquired in this way may be compared using object
+	 * equality. Two instances of Response are equal if and only if their three
+	 * constructor arguments, exact, inexact, and wrong, are also equal.
 	 */
 	@Test
-	public void testResponse() {
-		assertNotNull(Response.valueOf(1));
-		assertNotNull(Response.valueOf(1, 2, 3));
-	}
-
-	/**
-	 * Verify that two responses are considered equal if their pegs match (by length and color)
-	 */
-	@Test
-	public void testEqualsCode() {
-		assertTrue(Response.valueOf(1).equals(Response.valueOf(1)));
-		assertTrue(Response.valueOf(1, 2).equals(Response.valueOf(1, 2)));
+	public void testEquality() {
+		assertTrue(Response.valueOf(1, 2, 3) == Response.valueOf(1, 2, 3));
+		assertTrue(Response.valueOf(1, 2, 3).equals(Response.valueOf(1, 2, 3)));
 		
-		assertFalse(Response.valueOf(1, 2).equals(Response.valueOf(2, 1)));
-		assertFalse(Response.valueOf(2, 1).equals(Response.valueOf(1, 2)));
+		assertFalse(Response.valueOf(1, 2, 3) == Response.valueOf(0, 2, 3));
+		assertFalse(Response.valueOf(1, 2, 3) == Response.valueOf(1, 0, 3));
+		assertFalse(Response.valueOf(1, 2, 3) == Response.valueOf(1, 2, 0));
+		
+		assertFalse(
+				Response.valueOf(1, 2, 3).equals(Response.valueOf(0, 2, 3)));
+		assertFalse(
+				Response.valueOf(1, 2, 3).equals(Response.valueOf(1, 0, 3)));
+		assertFalse(
+				Response.valueOf(1, 2, 3).equals(Response.valueOf(1, 2, 0)));
 	}
 
 }

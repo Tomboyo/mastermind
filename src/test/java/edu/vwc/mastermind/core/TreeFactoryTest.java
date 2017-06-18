@@ -136,11 +136,11 @@ public class TreeFactoryTest {
 		Tree treeA = new Tree(Code.valueOf(0, 2));
 		Tree treeB = new Tree(Code.valueOf(2, 1));
 		Tree tmp = copyOf(treeA);
-		treeA.add(Response.valueOf(1, 0), copyOf(treeB));
-		treeB.add(Response.valueOf(1, 0), copyOf(tmp));
+		treeA.add(Response.valueOf(0, 1, 1), copyOf(treeB));
+		treeB.add(Response.valueOf(0, 1, 1), copyOf(tmp));
 		expect(comparator.compare(eq(treeA), eq(treeB)))
 				.andReturn(-1);		
-		expected.add(Response.valueOf(2, 0), treeA);
+		expected.add(Response.valueOf(1, 0, 1), treeA);
 		
 		// First guess has one misplaced peg, Response [1, 0]
 		// Possible answers are [2, 0] and [1, 2]
@@ -152,16 +152,16 @@ public class TreeFactoryTest {
 		Tree treeC = new Tree(Code.valueOf(2, 0));
 		Tree treeD = new Tree(Code.valueOf(1, 2));
 		tmp = copyOf(treeC);
-		treeC.add(Response.valueOf(1, 0), copyOf(treeD));
-		treeD.add(Response.valueOf(1, 0), copyOf(tmp));
+		treeC.add(Response.valueOf(0, 1, 1), copyOf(treeD));
+		treeD.add(Response.valueOf(0, 1, 1), copyOf(tmp));
 		expect(comparator.compare(eq(treeC), eq(treeD)))
 				.andReturn(-1);
-		expected.add(Response.valueOf(1, 0), treeC);
+		expected.add(Response.valueOf(0, 1, 1), treeC);
 		
 		// First guess has two misplaced pegs, Response [1, 1]
 		// The only possible answer is [1, 0]
 		Tree treeE = new Tree(Code.valueOf(1, 0));
-		expected.add(Response.valueOf(1, 1), treeE);
+		expected.add(Response.valueOf(0, 2, 0), treeE);
 		
 		// First guess shares no similarities with the answer, Response [0, 0]
 		// The possible answers are all Codes in setB
@@ -180,7 +180,7 @@ public class TreeFactoryTest {
 				new Code[]{ firstGuess, Code.valueOf(3, 4) },
 				new Code[]{ Code.valueOf(5, 3), Code.valueOf(4, 5) },
 				new Code[]{ Code.valueOf(5, 3), Code.valueOf(4, 5) });
-		expected.add(Response.valueOf(0, 0),
+		expected.add(Response.valueOf(0, 0, 2),
 				isomorphTree(expected, 3));
 		expect(comparator.compare(
 				eq(isomorphTree(treeA, 3)),
@@ -193,7 +193,7 @@ public class TreeFactoryTest {
 		
 		replay(comparator, providerFactory);		
 		TreeFactory factory = new TreeFactory(
-				Response.valueOf(2, 2),
+				Response.valueOf(2, 0, 0),
 				comparator,
 				providerFactory);
 		assertEquals(expected,

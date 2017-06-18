@@ -1,28 +1,38 @@
 package edu.vwc.mastermind.sequence;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Represents the response given by a COde Maker in a game of mastermind to the
- * Code Breaker's guess. 2s represent "correct color peg in correct position",
- * 1s represent "correct color peg in wrong position in code", and 0s represent
- * no additional feedback.
+ * Represents the feedback from comparing a guess code against the unknown
+ * answer code in a game of Mastermind.
  * 
- * @author Tomboyo
- *
+ * <p>
+ * In Mastermind, feedback indicates three things: (1) The number of pegs in the
+ * guess that precisely matched pegs in the answer, (2) the number of the
+ * remaining pegs that were of the right color but wrong position, and (3) the
+ * number of the remaining pegs that were the wrong color. These three values
+ * are represented by a sequence of pegs. The order of the pegs in the feedback
+ * is, however, entirely irrelevant, and may be arbitrarily sorted.
+ * 
+ * <p>
+ * The Response class represents feedback using a sequence of integers, and is
+ * produced by the {@link Code#compareTo(Code)} method.
  */
 public class Response {
 
 	private static Map<Integer, Response> cache = new HashMap<>();
 	
-	private int[] sequence;
-	private int hash;
+	private final int exact;
+	private final int inexact;
+	private final int wrong;
+	private final int hash;
 
-	private Response(int... sequence) {
-		this.sequence = sequence.clone();
-		this.hash = hash(this.sequence);
+	private Response(int exact, int inexact, int wrong) {
+		this.exact = exact;
+		this.inexact = inexact;
+		this.wrong = wrong;
+		this.hash = hash(this.exact, this.inexact, this.wrong);
 	}
 	
 	/**
@@ -30,13 +40,13 @@ public class Response {
 	 * @param sequence
 	 * @return
 	 */
-	public static Response valueOf(int... sequence) {
-		int key = hash(sequence);
+	public static Response valueOf(int exact, int inexact, int wrong) {
+		int key = hash(exact, inexact, wrong);
 		Response response = cache.get(key);
 		if (response == null) {
 			synchronized (cache) {
 				if ((response = cache.get(key)) == null) {
-					response = new Response(sequence);
+					response = new Response(exact, inexact, wrong);
 					cache.put(key, response);
 				}
 			}
@@ -59,20 +69,22 @@ public class Response {
 		if (other == this) return true;
 		if (other == null) return false;
 		if (this.getClass() != other.getClass()) return false;
-
-		return Arrays.equals(sequence, ((Response) other).sequence);
+		Response r = (Response) other;
+		return this.exact == r.exact
+				&& this.inexact == r.inexact
+				&& this.wrong == r.wrong;
 	}
 	
 	@Override
 	public String toString() {
-		return Arrays.toString(sequence);
+		return String.format("[%s, %s, %s]", exact, inexact, wrong);
 	}
 	
-	private static int hash(int... sequence) {
+	private static int hash(int a, int b, int c) {
 		int h = 17;
-		for (int i : sequence) {
-			h = 31 * h + i;
-		}
+		h = 31 * h + a;
+		h = 31 * h + b;
+		h = 31 * h + c;
 		return h;
 	}
 }

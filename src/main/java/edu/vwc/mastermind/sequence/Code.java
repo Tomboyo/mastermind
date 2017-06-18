@@ -5,9 +5,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Represents a colored peg sequence guessed by the Code Breaker in a1 game of Mastermind.
- * @author Tomboyo
- *
+ * Represents the colored-peg sequences that players make in a game of
+ * Mastermind. In the context of a game, all such sequences must be composed of
+ * a specific number of pegs within a specific range of colors.
+ * 
+ * <p>
+ * Code instances represent the colored pegs with integers, which are generally
+ * (but not necessarily) positive for simplicity. In the context of a single
+ * Mastermind game (i.e, a single strategy tree), all Code instances must have a
+ * specific length (equal to the game's configured number of pegs) and must be
+ * composed of integers whose values are within a predefined range (specified by
+ * the game's number of colors);
+ * 
+ * <p>
+ * This class is thread-safe. Code instances are immutable.
  */
 public class Code {
 
@@ -21,6 +32,14 @@ public class Code {
 		this.hash = hash(this.sequence);
 	}
 	
+	/**
+	 * Static factory for getting canonical Code instances.
+	 * 
+	 * @param sequence
+	 *            The sequence of pegs this code represents, where each integer
+	 *            represents a particular color of peg.
+	 * @return The canonical Code instance for this sequence
+	 */
 	public static Code valueOf(int... sequence) {
 		int key = hash(sequence);
 		Code code = cache.get(key);
@@ -36,8 +55,7 @@ public class Code {
 	}
 	
 	/**
-	 * Get a view of this Code as an integer array. Note that modifying the
-	 * array will have no impact on the code instance.
+	 * Get a view of this Code as an integer array.
 	 * 
 	 * @return An array representation of this code
 	 */
@@ -46,50 +64,50 @@ public class Code {
 	}
 	
 	/**
-	 * Get the feedback for this code when compared against a given answer
+	 * Compare this code against another and return the {@link Response} with
+	 * the results of the comparison.
 	 * 
-	 * @param answer
-	 *            Code to compare this one against
+	 * @param other
+	 *            A Code to compare this instance against
 	 * @return A Response object indicating the results of the comparison
 	 */
-	public Response compareTo(Code answer) {
-		if (answer.sequence.length != sequence.length) {
+	public Response compareTo(Code other) {
+		if (other.sequence.length != sequence.length) {
 			throw new IllegalArgumentException(
 					"Codes of unequal length are incomperable");
 		}
 
-		// 0: no feedback
-		// 1: misplaced peg
-		// 2: correct peg
-		int[] response = new int[sequence.length];
-		boolean[] this_mask = new boolean[sequence.length];
-		boolean[] answer_mask = new boolean[sequence.length];
-		short index = 0;
+		int exact, inexact;
+		exact = inexact = 0;
+		
+		boolean[] selfMask = new boolean[sequence.length];
+		boolean[] otherMask = new boolean[sequence.length];
 
 		// Pass 1: Count correct pegs
 		for (int i = 0; i < sequence.length; i++) {
-			if (sequence[i] == answer.sequence[i]) {
-				response[index++] = 2;
-				this_mask[i] = true;
-				answer_mask[i] = true;
+			if (sequence[i] == other.sequence[i]) {
+				exact++;
+				selfMask[i] = true;
+				otherMask[i] = true;
 			}
 		}
 
 		// Pass 2: Count misplaced pegs
 		for (int i = 0; i < sequence.length; i++) {
-			if (this_mask[i] == true) continue;
+			if (selfMask[i] == true) continue;
 
-			for (int j = 0; j < answer.sequence.length; j++) {
-				if (answer_mask[j] == true) continue;
+			for (int j = 0; j < other.sequence.length; j++) {
+				if (otherMask[j] == true) continue;
 
-				if (sequence[i] == answer.sequence[j]) {
-					response[index++] = 1;
-					answer_mask[j] = true;
+				if (sequence[i] == other.sequence[j]) {
+					inexact++;
+					otherMask[j] = true;
 				}
 			}
 		}
 
-		return Response.valueOf(response);
+		return Response.valueOf(
+				exact, inexact, sequence.length - exact - inexact);
 	}
 
 	@Override
