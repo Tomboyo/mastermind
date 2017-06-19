@@ -6,9 +6,9 @@ import java.util.Set;
 import edu.vwc.mastermind.sequence.Code;
 
 /**
- * Generates all Code permutations (colors^pegs codes in total)
- * @author Tomboyo
- * 
+ * Provides a set of ${@link Code}s that enumerates over all permutations of
+ * Code with a configured number of pegs and colors. There will be colors^pegs
+ * total Code instances in the collection.
  */
 class AllCodesProvider implements CodesProvider {
 
@@ -18,14 +18,6 @@ class AllCodesProvider implements CodesProvider {
 		generateCodes(colors, pegs);
 	}
 
-	/**
-	 * Get a complete enumeration of codes based on configured number of colors
-	 * and pegs. The codes collection is lazily initialized and does not exist
-	 * until this method is called. The result is cached, so future calls to
-	 * this method do not waste computation time.
-	 * 
-	 * @return Code collection containing colors^pegs codes.
-	 */
 	@Override
 	public Set<Code> getCodes() {
 		return codes;

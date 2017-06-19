@@ -1,6 +1,5 @@
 package edu.vwc.mastermind.core;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -18,19 +17,17 @@ import edu.vwc.mastermind.sequence.provider.Providers;
 import edu.vwc.mastermind.tree.Tree;
 
 /**
- * Responsible for running the simulation. Dependencies are injected in the
- * constructor, then the game is run in a multi-threaded environment.
- * 
- * @author Tom Simmons
- *
+ * Manages construction of a Mastermind game strategy tree in a multithreaded
+ * environment.
  */
-class Controller {
+public class Controller {
 
-	private final int colors, pegs;
+	private final int colors;
+	private final int pegs;
 	private final CompletionService<Tree> cs;
 	private final Comparator<Tree> comparator;
 
-	Controller(int colors, int pegs, Comparator<Tree> comparator) {
+	public Controller(int colors, int pegs, Comparator<Tree> comparator) {
 		this.colors = colors;
 		this.pegs = pegs;
 		this.comparator = comparator;
@@ -41,10 +38,9 @@ class Controller {
 	}
 	
 	/**
-	 * Builds a strategy tree for a game of mastermind. Note that repeated calls
-	 * to this method can return entirely different Tree structures. The only
-	 * guarantee is that for any Trees u and v produced by this method with the
-	 * same parameters, comparator.compare(u, v) == 0.
+	 * Builds a Mastermind strategy tree. Note that repeated calls to this
+	 * method can return entirely different Tree structures, but the configured
+	 * comparator will evaluate all returned trees as equivalent.
 	 * 
 	 * @throws ExecutionException
 	 *             If a simulation branch encounters error
@@ -54,9 +50,7 @@ class Controller {
 	public Tree simulate()
 			throws ExecutionException, InterruptedException {
 		
-		int[] a = new int[pegs];
-		Arrays.fill(a, 2);
-		Response correct = Response.valueOf(a);
+		Response correct = Response.valueOf(pegs, 0, 0);
 		
 		CodesProvider allCodesProvider = Providers.allCodes(colors, pegs);
 		
@@ -84,7 +78,7 @@ class Controller {
 		private final Code guess;
 		private final Set<Code> answers;
 		
-		public Branch(TreeFactory factory, Code guess, Set<Code> answers) {
+		private Branch(TreeFactory factory, Code guess, Set<Code> answers) {
 			this.factory = factory;
 			this.guess = guess;
 			this.answers = answers;

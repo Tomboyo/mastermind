@@ -12,13 +12,18 @@ import edu.vwc.mastermind.sequence.Response;
 import edu.vwc.mastermind.sequence.provider.CodesProviderFactory;
 import edu.vwc.mastermind.tree.Tree;
 
+/**
+ * The TreeFactory is responsible for generating a Mastermind strategy tree
+ * beginning with a provided guess. TreeFactories are instantiated with
+ * decision-making objects that define what an optimal strategy tree looks like,
+ * to which TreeFactories defer during the tree-building process in order to
+ * produce a strategy tree that adheres to any arbitrary criteria.
+ */
 public class TreeFactory {
 	
 	private Response correct;
 	private Comparator<Tree> comparator;
 	private CodesProviderFactory guessProviderFactory;
-	
-	// private GuessProvider
 	
 	public TreeFactory(Response correct, Comparator<Tree> comparator,
 			CodesProviderFactory guessProviderFactory) {
@@ -28,20 +33,21 @@ public class TreeFactory {
 	}
 	
 	/**
-	 * Determine the best moves to make in order to win a game of mastermind.
-	 * The comparator this class is configured with determines what the "best"
-	 * game looks like (e.g, shortest turns to win, or shortest average turns to
-	 * win). The evaluation begins with the given guess, will not repeat any
-	 * codes that have already been guessed, and will eventually reach all of
-	 * the provided answers.
+	 * Create a strategy tree that begins with the provided guess Code.
 	 * 
 	 * @param guess
 	 *            The first guess to make in evaluating the game
 	 * @param guessed
-	 *            Codes that have already been guessed
+	 *            Codes that have already been guessed, which may or may not be
+	 *            guessed again at the discrimination of the configured
+	 *            CodesProviderFactory.
 	 * @param answers
-	 *            Possible answers remaining
-	 * @return The optimized tree of moves
+	 *            Possible answers remaining, which may be used by the
+	 *            configured CodesProviderFactory as a hint to determine what
+	 *            codes to evaluate as guesses in what order.
+	 * @return A strategy tree beginning with {@code guess} and proceeding based
+	 *         on decisions made by the configured {@link Comparator<Tree>} and
+	 *         {@link CodesProviderFactory}.
 	 */
 	public Tree newTree(Code guess, Set<Code> guessed, Set<Code> answers) {
 		Tree root = new Tree(guess);

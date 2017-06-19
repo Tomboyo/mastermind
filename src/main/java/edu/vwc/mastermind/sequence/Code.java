@@ -14,11 +14,13 @@ import java.util.Map;
  * (but not necessarily) positive for simplicity. In the context of a single
  * Mastermind game (i.e, a single strategy tree), all Code instances must have a
  * specific length (equal to the game's configured number of pegs) and must be
- * composed of integers whose values are within a predefined range (specified by
- * the game's number of colors);
+ * composed of integers whose values are drawn from a finite collection of
+ * distinct integers, the number of which must be equal to the game's colors
+ * parameter. The specific integers used is otherwise arbitrary, but for
+ * simplicity we assume that they are drawn from a consecutive range.
  * 
  * <p>
- * This class is thread-safe. Code instances are immutable.
+ * Code instances are immutable and thread-safe.
  */
 public class Code {
 

@@ -5,11 +5,7 @@ import java.util.Set;
 import edu.vwc.mastermind.sequence.Code;
 
 /**
- * Responsible for producing collections of codes, such as those necessary to
- * seed a simulation.
- * 
- * @author Tom Simmons
- *
+ * Responsible for producing collections of {@link Code}s.
  */
 public interface CodesProvider {
 

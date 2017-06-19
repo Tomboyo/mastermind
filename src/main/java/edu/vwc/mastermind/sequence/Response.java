@@ -9,15 +9,17 @@ import java.util.Map;
  * 
  * <p>
  * In Mastermind, feedback indicates three things: (1) The number of pegs in the
- * guess that precisely matched pegs in the answer, (2) the number of the
- * remaining pegs that were of the right color but wrong position, and (3) the
- * number of the remaining pegs that were the wrong color. These three values
- * are represented by a sequence of pegs. The order of the pegs in the feedback
- * is, however, entirely irrelevant, and may be arbitrarily sorted.
+ * guess that precisely match pegs in the answer, (2) the number of the
+ * remaining pegs that are the correct color but wrong position, and (3) the
+ * number of remaining pegs in neither of the preceding categories. The response
+ * does not indicate specifically which pegs in the guess are correct or
+ * misplaced, but rather how many. The Response class represents these three
+ * elements as integers: "exact", "inexact", and "wrong", to correspond
+ * respectively with items 1, 2, and 3 above.
  * 
  * <p>
- * The Response class represents feedback using a sequence of integers, and is
- * produced by the {@link Code#compareTo(Code)} method.
+ * Responses are immutable and thread-safe. Response objects are principally
+ * created via {@link Code#compareTo(Code)}.
  */
 public class Response {
 
@@ -36,9 +38,19 @@ public class Response {
 	}
 	
 	/**
-	 * Static flyweight factory for Response objects
-	 * @param sequence
-	 * @return
+	 * Static flyweight factory for Response objects.
+	 * 
+	 * @param exact
+	 *            The number of pegs in a guessed Code that exactly matched pegs
+	 *            in the answer, both in value (color) and position
+	 * @param inexact
+	 *            The number of pegs in a guessed code that are not exact, but
+	 *            if re-arranged would be exact. That is, the number of
+	 *            not-exact pegs whose values (colors) are correct but whose
+	 *            positions are incorrect.
+	 * @param wrong
+	 *            The number of pegs that are neither exact nor inexact.
+	 * @return A canonical response object for the given feedback values
 	 */
 	public static Response valueOf(int exact, int inexact, int wrong) {
 		int key = hash(exact, inexact, wrong);
@@ -61,8 +73,8 @@ public class Response {
 	}
 
 	/**
-	 * Two responses are considered equal if they would have the same numbers in
-	 * the same positions once sorted (i.e, set equality).
+	 * Two responses are considered equal if and only if they indicate the same
+	 * number of exact, inexact, and wrong pegs in a guess.
 	 */
 	@Override
 	public final boolean equals(Object other) {
