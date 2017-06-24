@@ -15,10 +15,6 @@ public class Tree implements Iterable<Entry<Response, Tree>> {
 
 	private final LinkedHashMap<Response, Tree> children;
 	private final Code guess;
-	
-	// A temporary metric for tree depth. This will eventually be replaced with
-	// a much more robust metadata system.
-	private int depth;
 
 	/**
 	 * Create a new Tree instance with no children.
@@ -29,7 +25,6 @@ public class Tree implements Iterable<Entry<Response, Tree>> {
 	 */
 	public Tree(Code guess) {
 		this.guess = guess;
-		this.depth = 1;
 		children = new LinkedHashMap<>();
 	}
 	
@@ -59,7 +54,6 @@ public class Tree implements Iterable<Entry<Response, Tree>> {
 	 */
 	public void add(Response key, Tree child) {
 		children.put(key, child);
-		this.depth += child.depth;
 	}
 	
 	/**
@@ -93,7 +87,17 @@ public class Tree implements Iterable<Entry<Response, Tree>> {
 	 * @return The depth of this tree.
 	 */
 	public int depth() {
-		return depth;
+		if (children.isEmpty()) {
+			return 1;
+		}
+		int depth = 0;
+		for (Entry<Response, Tree> entry : children()) {
+			int d = entry.getValue().depth();
+			if (d > depth) {
+				depth = d; 
+			}
+		}
+		return 1 + depth;
 	}
 	
 	/**
