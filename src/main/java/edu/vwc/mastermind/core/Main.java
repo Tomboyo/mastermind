@@ -10,9 +10,12 @@ import edu.vwc.mastermind.tree.Tree;
 public class Main {
 
 	public static void main(String[] args) {
-		String configuration = System.getProperty("edu.vwc.mastermind.config",
-				"../conf/mastermind.xml");
+		String configuration = System.getProperty("edu.vwc.mastermind.config");
 		
+		if (configuration.isEmpty()) {
+			System.err.println("No configuration file provided."
+					+ " Set with -Dedu.vwc.mastermind.config=\"path/to/xml\"");
+		}
 		System.out.println("Attempting to load configuration from "
 				+ configuration);
 		
