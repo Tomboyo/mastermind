@@ -7,13 +7,13 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import edu.vwc.mastermind.sequence.Code;
 import edu.vwc.mastermind.sequence.Response;
 import edu.vwc.mastermind.sequence.provider.CodesProvider;
-import edu.vwc.mastermind.sequence.provider.ProviderFactories;
-import edu.vwc.mastermind.sequence.provider.Providers;
+import edu.vwc.mastermind.sequence.provider.CodesProviderFactory;
 import edu.vwc.mastermind.tree.Tree;
 
 /**
@@ -22,19 +22,42 @@ import edu.vwc.mastermind.tree.Tree;
  */
 public class Controller {
 
-	private final int colors;
-	private final int pegs;
-	private final CompletionService<Tree> cs;
+	private final Response correctResponse;
 	private final Comparator<Tree> comparator;
+	private final CodesProvider firstGuessProvider;
+	private final CodesProvider goalCodeProvider;
+	private final CodesProviderFactory guessCodesProviderFactory;
 
-	public Controller(int colors, int pegs, Comparator<Tree> comparator) {
-		this.colors = colors;
-		this.pegs = pegs;
+	/**
+	 * 
+	 * @param correctResponse
+	 *            The canonical instance of Response which represents a correct
+	 *            answer for this game. This should be provided via
+	 *            {@code Response.valueOf(pegs, 0, 0)}.
+	 * @param comparator
+	 *            A comparator user to sort {@link Tree}s by some arbitrary
+	 *            logic. Lower-valued Tree instances are preferred by the
+	 *            TreeFactory.
+	 * @param guessCodesProviderFactory
+	 *            The CodesProvider instances produced by this factory are
+	 *            responsible for suggesting sets of Code instances to use as
+	 *            future guesses during Tree creation.
+	 * @param firstGuessProvider
+	 *            Provides a set of Codes guessed first. For each code, a
+	 *            complete game tree will be generated. All the trees are
+	 *            compared by the comparator to determine which is "best."
+	 * @param goalCodeProvider
+	 *            Provides a Set of all codes that must be eventually guessed in
+	 *            the strategy tree.
+	 */
+	public Controller(Response correctResponse, Comparator<Tree> comparator,
+			CodesProviderFactory guessCodesProviderFactory,
+			CodesProvider firstGuessProvider, CodesProvider goalCodeProvider) {
+		this.correctResponse = correctResponse;
 		this.comparator = comparator;
-		
-		cs = new ExecutorCompletionService<Tree>(
-				Executors.newFixedThreadPool(Runtime.getRuntime()
-						.availableProcessors()));
+		this.firstGuessProvider = firstGuessProvider;
+		this.goalCodeProvider = goalCodeProvider;
+		this.guessCodesProviderFactory = guessCodesProviderFactory;
 	}
 	
 	/**
@@ -49,22 +72,24 @@ public class Controller {
 	 */
 	public Tree simulate()
 			throws ExecutionException, InterruptedException {
-		
-		Response correct = Response.valueOf(pegs, 0, 0);
-		
-		CodesProvider allCodesProvider = Providers.allCodes(colors, pegs);
+		ExecutorService executorService = Executors
+				.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		CompletionService<Tree> completionService =
+				new ExecutorCompletionService<Tree>(executorService);
 		
 		int count = 0;
-		for (Code guess : allCodesProvider.getCodes()) {
-			TreeFactory factory = new TreeFactory(correct, comparator,
-					ProviderFactories.allCodes(allCodesProvider));
-			cs.submit(new Branch(factory,guess, allCodesProvider.getCodes()));
+		for (Code guess : firstGuessProvider.getCodes()) {
+			TreeFactory factory = new TreeFactory(correctResponse, comparator,
+					guessCodesProviderFactory);
+			completionService.submit(
+					new Branch(factory, guess, goalCodeProvider.getCodes()));
 			count++;
 		}
-		
+		executorService.shutdown();
+
 		Tree result = null;
 		for (int i = 0; i < count; i++) {
-			Tree next = cs.take().get();
+			Tree next = completionService.take().get();
 			if (comparator.compare(next,  result) < 0) {
 				result = next;
 			}

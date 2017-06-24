@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="colors" class="java.lang.Integer">
+		<constructor-arg value="3"/>
+	</bean>
+	
+	<bean id="pegs" class="java.lang.Integer">
+		<constructor-arg value="2"/>
+	</bean>
+
+	<bean id="controller" class="edu.vwc.mastermind.core.Controller">
+		<!-- The "correct" Response instance, in this case for a game with 3 pegs -->
+		<constructor-arg type="edu.vwc.mastermind.sequence.Response">
+			<bean id="correct.response"
+			class="edu.vwc.mastermind.sequence.Response"
+				factory-method="valueOf">
+				<constructor-arg index="0" ref="pegs" />
+				<constructor-arg index="1" value="0" />
+				<constructor-arg index="2" value="0" />
+			</bean>
+		</constructor-arg>
+
+		<!-- A Tree comparator that sorts desired strategy trees, where better 
+			< worse. minRequiredTurns prefers strategy trees that minimize the maximum 
+			number of turns strictly necessary to win -->
+		<constructor-arg type="java.util.Comparator">
+			<bean id="comparator"
+			class="edu.vwc.mastermind.tree.compare.Comparators"
+				factory-method="minRequiredTurns" />
+		</constructor-arg>
+
+
+		<!-- Provides codes to guess; exhausts all reasonable options -->
+		<constructor-arg
+			type="edu.vwc.mastermind.sequence.provider.CodesProviderFactory">
+			<bean id="guessCodesProviderFactory"
+			class="edu.vwc.mastermind.sequence.provider.AllCodesProviderFactory">
+				<constructor-arg
+					type="edu.vwc.mastermind.sequence.provider.CodesProvider">
+					<bean class="edu.vwc.mastermind.sequence.provider.AllCodesProvider">
+						<constructor-arg type="int" ref="colors" />
+						<constructor-arg type="int" ref="pegs" />
+					</bean>
+				</constructor-arg>
+			</bean>
+		</constructor-arg>
+
+		<!-- Try each and every code (in a 3 color, 3 peg game) as a first guess -->
+		<constructor-arg type="edu.vwc.mastermind.sequence.provider.CodesProvider">
+			<bean id="guessCodeProvider"
+			class="edu.vwc.mastermind.sequence.provider.Providers"
+				factory-method="allCodes">
+				<constructor-arg type="int" ref="colors" />
+				<constructor-arg type="int" ref="pegs" />
+			</bean>
+		</constructor-arg>
+
+		<!-- The universe of codes (potential answers) -->
+		<constructor-arg type="edu.vwc.mastermind.sequence.provider.CodesProvider">
+			<bean id="goalCodeProvider"
+			class="edu.vwc.mastermind.sequence.provider.Providers"
+				factory-method="allCodes">
+				<constructor-arg type="int" ref="colors" />
+				<constructor-arg type="int" ref="pegs" />
+			</bean>
+		</constructor-arg>
+	</bean>
+
+</beans>
