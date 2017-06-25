@@ -1,13 +1,16 @@
-﻿﻿#Mastermind Play Algorithm
+Mastermind Play Algorithm
+-------------------------
 
 The original draft of this program was developed by Tom Simmons (tomasimmons@gmail.com) as part of an undergraduate research project conducted at Virginia Wesleyan College (VWC), Norfolk, Virginia, USA, under the leadership of Dr. Audrey Malagon (amalagon@vwc.edu) and in conjunction with the efforts of co-researchers Tyler Chang (thchang@vwc.edu) and Samantha Eeanes (sceanes@vwc.edu). Our research objectives were to uncover the mathematical principles governing the 1970 board game [Mastermind](https://en.wikipedia.org/wiki/Mastermind_(board_game)) and the effect that permutations on the game's rules had on turns to win (e.g, the effects of varying the number of pegs or colors of pegs allowed in codes). The results of this research were presented at the 2014 Joint Mathematics Meetings (JMM) in Baltimore, Maryland, USA, under the title "The New Mastermind".
 
 The program as presented on Git is a refactored version of the original code that was used for research purposes. The program does not yet fully mirror the original design's capabilities; the original did precisely one thing relatively quickly and at the expense of flexibility and readability. This draft aims to be as extensible and intelligible as possible while maintaining as much performance as can be wrangled.
 
-#Basic Usage
+Basic Usage
+-----------
 This project uses Apache Maven to manage dependencies and the build process. To build, call `mvn clean install` from the root of the project. To run the provided example configuration, call `java -Dedu.vwc.mastermind.config="../examples/mastermind.xml" -jar mastermind-0.0.1-SNAPSHOT-jar-with-dependencies.jar`from the target directory. This will build a strategy tree for a game with 3 colors and 2 pegs.
 
-#Interpreting Output
+Interpreting Output
+-------------------
 The program generates strategy trees for playing Mastermind. They indicate the maximum number of turns it should take to win regardless of what the ultimate answer is, and provide the precise steps a player can make to win in the prescribed number of turns. The following is example output from a game with 3 colors and 2 pegs:
 `````
 Strategy tree maximum turns: 3
