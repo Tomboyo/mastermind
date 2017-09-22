@@ -21,9 +21,9 @@ import java.util.Map;
  * Responses are immutable and thread-safe. Response objects are principally
  * created via {@link Code#compareTo(Code)}.
  */
-public class Response {
+public final class Response {
 
-	private static Map<Integer, Response> cache = new HashMap<>();
+	private static final Map<Integer, Response> cache = new HashMap<>();
 	
 	private final int exact;
 	private final int inexact;
@@ -34,7 +34,7 @@ public class Response {
 		this.exact = exact;
 		this.inexact = inexact;
 		this.wrong = wrong;
-		this.hash = hash(this.exact, this.inexact, this.wrong);
+		this.hash = generateHash(this.exact, this.inexact, this.wrong);
 	}
 	
 	/**
@@ -53,7 +53,7 @@ public class Response {
 	 * @return A canonical response object for the given feedback values
 	 */
 	public static Response valueOf(int exact, int inexact, int wrong) {
-		int key = hash(exact, inexact, wrong);
+		int key = generateHash(exact, inexact, wrong);
 		Response response = cache.get(key);
 		if (response == null) {
 			synchronized (cache) {
@@ -78,9 +78,10 @@ public class Response {
 	 */
 	@Override
 	public final boolean equals(Object other) {
-		if (other == this) return true;
-		if (other == null) return false;
-		if (this.getClass() != other.getClass()) return false;
+		if (other == this)
+			return true;
+		if (!(other instanceof Response))
+			return false;
 		Response r = (Response) other;
 		return this.exact == r.exact
 				&& this.inexact == r.inexact
@@ -92,11 +93,11 @@ public class Response {
 		return String.format("[%s, %s, %s]", exact, inexact, wrong);
 	}
 	
-	private static int hash(int a, int b, int c) {
-		int h = 17;
-		h = 31 * h + a;
-		h = 31 * h + b;
-		h = 31 * h + c;
-		return h;
+	private static int generateHash(int a, int b, int c) {
+		int hashCode = 1;
+		hashCode = 31 * hashCode + a;
+		hashCode = 31 * hashCode + b;
+		hashCode = 31 * hashCode + c;
+		return hashCode;
 	}
 }
