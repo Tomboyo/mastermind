@@ -22,28 +22,27 @@ import java.util.Map;
  * <p>
  * Code instances are immutable and thread-safe.
  */
-public class Code {
+public final class Code {
 
-	private static Map<Integer, Code> cache = new HashMap<>();
+	private static final Map<Integer, Code> cache = new HashMap<>();
 	
 	private final int[] sequence;
 	private final int hash;
 
 	private Code(int... sequence) {
 		this.sequence = sequence.clone();
-		this.hash = hash(this.sequence);
+		hash = generateHash(this.sequence);
 	}
 	
 	/**
-	 * Static factory for getting canonical Code instances.
+	 * Get a canonical Code instance.
 	 * 
 	 * @param sequence
-	 *            The sequence of pegs this code represents, where each integer
-	 *            represents a particular color of peg.
+	 *            The integer sequence which describes this code.
 	 * @return The canonical Code instance for this sequence
 	 */
-	public static Code valueOf(int... sequence) {
-		int key = hash(sequence);
+	public static Code valueOf(int[] sequence) {
+		int key = generateHash(sequence);
 		Code code = cache.get(key);
 		if (code == null) {
 			synchronized (cache) {
@@ -54,6 +53,26 @@ public class Code {
 			}
 		}
 		return code;
+	}
+	
+	/**
+	 * Get a canonical Code instance
+	 * 
+	 * @param first
+	 *            The first integer in the sequence that describes this Code
+	 * @param rest
+	 *            The remaining integers in the sequence
+	 * @return The canonical ode instance for this Sequence
+	 */
+	public static Code valueOf(int first, int... rest) {
+		return valueOf(join(first, rest));
+	}
+	
+	private static int[] join(int first, int[] rest) {
+		int[] joinedArray = new int[rest.length + 1];
+		joinedArray[0] = first;
+		System.arraycopy(rest,  0, joinedArray, 1, rest.length);
+		return joinedArray;
 	}
 	
 	/**
@@ -133,11 +152,7 @@ public class Code {
 		return Arrays.toString(sequence);
 	}
 	
-	private static int hash(int... sequence) {
-		int h = 17;
-		for (int i : sequence) {
-			h = 31 * h + i;
-		}
-		return h;
+	private static int generateHash(int[] sequence) {
+		return Arrays.hashCode(sequence);
 	}
 }
