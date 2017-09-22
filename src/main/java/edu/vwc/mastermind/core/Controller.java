@@ -35,7 +35,7 @@ public class Controller {
 	 *            answer for this game. This should be provided via
 	 *            {@code Response.valueOf(pegs, 0, 0)}.
 	 * @param comparator
-	 *            A comparator user to sort {@link Tree}s by some arbitrary
+	 *            A comparator used to sort {@link Tree}s by some arbitrary
 	 *            logic. Lower-valued Tree instances are preferred by the
 	 *            TreeFactory.
 	 * @param guessCodesProviderFactory
