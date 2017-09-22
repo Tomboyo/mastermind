@@ -84,12 +84,12 @@ public class TreeFactoryTest {
 		// @formatter:off
 		/*
 		 * guess: response(answers grouped by response) -> next guess: ...
-		 * [0,1]: [2,0]([0,2], [2,1]) -> [0,2]: [1,0]([2,1]) -> [2,1]
-		 *                               [2,1]: [1,0]([0,2]) -> [0,2]
-		 *      : [1,0]([2,0], [1,2]) -> [2,0]: [1,0]([1,2]) -> [1,2]
-		 *                            -> [1,2]: [1,0]([2,0]) -> [2,0]
-		 *      : [1,1]([1,0]) -> [1,0]
-		 *      : [0,0](setB) -> (* see below)
+		 * [0,1]: [1,0,1]([0,2], [2,1]) -> [0,2]: [0,1,1]([2,1]) -> [2,1]
+		 *                                 [2,1]: [0,1,1]([0,2]) -> [0,2]
+		 *      : [0,1,1]([2,0], [1,2]) -> [2,0]: [0,1,1]([1,2]) -> [1,2]
+		 *                              -> [1,2]: [0,1,1]([2,0]) -> [2,0]
+		 *      : [0,2,0]([1,0]) -> [1,0]
+		 *      : [0,0,2](setB) -> (* see below)
 		 *
 		 */
 		//@formatter:on
@@ -126,7 +126,7 @@ public class TreeFactoryTest {
 		expect(comparator.compare(isNull(), anyObject(Tree.class)))
 				.andReturn(1).anyTimes();
 		
-		// First guess has one correct peg, Response [2, 0].
+		// First guess has one correct peg, Response [1, 0, 1].
 		// Possible answers are [0, 2] and [2, 1].
 		// Evaluate [0, 2] and [2, 1] as guesses.
 		setExpectation(providerFactory,
@@ -142,7 +142,7 @@ public class TreeFactoryTest {
 				.andReturn(-1);		
 		expected.add(Response.valueOf(1, 0, 1), treeA);
 		
-		// First guess has one misplaced peg, Response [1, 0]
+		// First guess has one misplaced peg, Response [0, 1, 1]
 		// Possible answers are [2, 0] and [1, 2]
 		// Evaluate [2, 0] and [1, 2] as guesses
 		setExpectation(providerFactory,
@@ -158,24 +158,25 @@ public class TreeFactoryTest {
 				.andReturn(-1);
 		expected.add(Response.valueOf(0, 1, 1), treeC);
 		
-		// First guess has two misplaced pegs, Response [1, 1]
+		// First guess has two misplaced pegs, Response [0, 2, 0]
 		// The only possible answer is [1, 0]
 		Tree treeE = new Tree(Code.valueOf(1, 0));
 		expected.add(Response.valueOf(0, 2, 0), treeE);
 		
-		// First guess shares no similarities with the answer, Response [0, 0]
+		// First guess shares no similarities with the answer, Response
+		// [0, 0, 2].
 		// The possible answers are all Codes in setB
 		// Only evaluate the next guess of [3, 4]
 		setExpectation(providerFactory,
 				new Code[]{ firstGuess },
 				setB.toArray(new Code[]{}),
 				new Code[]{ Code.valueOf(3, 4) });
-		// Isomorphism of [2,0]([0,2], [2,1]) tree
+		// Isomorphism of [1,0,1]([0,2], [2,1]) tree
 		setExpectation(providerFactory,
 				new Code[]{ firstGuess, Code.valueOf(3, 4) },
 				new Code[]{ Code.valueOf(3, 5), Code.valueOf(5, 4) },
 				new Code[]{ Code.valueOf(3, 5), Code.valueOf(5, 4) });
-		// Isomorphism of [1,0]([2,0], [1,2]) tree
+		// Isomorphism of [0,1,1]([2,0], [1,2]) tree
 		setExpectation(providerFactory,
 				new Code[]{ firstGuess, Code.valueOf(3, 4) },
 				new Code[]{ Code.valueOf(5, 3), Code.valueOf(4, 5) },
@@ -191,7 +192,7 @@ public class TreeFactoryTest {
 				eq(isomorphTree(treeD, 3))))
 		.andReturn(-1);
 		
-		replay(comparator, providerFactory);		
+		replay(comparator, providerFactory);
 		TreeFactory factory = new TreeFactory(
 				Response.valueOf(2, 0, 0),
 				comparator,
