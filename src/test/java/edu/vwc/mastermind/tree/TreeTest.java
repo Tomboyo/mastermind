@@ -1,5 +1,6 @@
 package edu.vwc.mastermind.tree;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
@@ -31,6 +32,17 @@ public class TreeTest {
 		root.add(Response.valueOf(0, 0, 2), b);
 		
 		return root;
+	}
+	
+	@Test
+	public void testToStringCompatibleWithFromString() {
+		Tree tree = Tree.fromString(
+				"[0,1]->[0,2,0][1,0]"
+				+ "[0,1]->[0,0,2][2,2]"
+				+ "[0,1]->[0,1,1][0,0]->[1,0,1][2,0]"
+				+ "[0,1]->[0,1,1][0,0]->[0,0,2][1,2]");
+		
+		assertThat(Tree.fromString(tree.toString()), equalTo(tree));
 	}
 
 }

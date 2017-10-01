@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import edu.vwc.mastermind.sequence.Code;
 import edu.vwc.mastermind.sequence.Response;
@@ -106,6 +107,43 @@ public class Tree implements Iterable<Entry<Response, Tree>> {
 	public int size() {
 		return children.size();
 	}
+	
+	public static Tree copyOf(Tree other) {
+		Tree root = new Tree(other.guess);
+		other.children.forEach((response, tree) -> {
+			root.add(response, copyOf(tree));
+		});
+		return root;
+	}
+	
+	public static Tree union(final Tree a, final Tree b) {
+		if (a == null || b == null)
+			throw new NullPointerException();
+		if (a == b)
+			return copyOf(a);
+		if (a.guess != b.guess)
+			throw new IllegalArgumentException(
+					"Trees must share a common root");
+		
+		Tree newTree = new Tree(a.guess);
+		Stream.concat(
+				a.children.entrySet().stream(),
+				b.children.entrySet().stream())
+				.forEach(entry -> {
+					Response key = entry.getKey();
+					Tree value = entry.getValue();
+					Tree valueInA = a.get(key);
+					Tree valueInB = b.get(key);
+					
+					if (valueInA != null && valueInB != null) {
+						newTree.add(key, union(valueInA, valueInB));
+					} else {
+						newTree.add(key, copyOf(value));
+					}
+				});
+		
+		return newTree;
+	}
 
 	@Override
 	public Iterator<Entry<Response, Tree>> iterator() {
@@ -143,14 +181,28 @@ public class Tree implements Iterable<Entry<Response, Tree>> {
 				StringBuilder prefixBuilder = new StringBuilder();
 				prefixBuilder.append(prefix)
 						.append(guess)
-						.append(entry.getKey())
-						.append("->");
+						.append("->")
+						.append(entry.getKey());
 				builder.append(entry.getValue().toString(
 						prefixBuilder.toString()));
 			}
 		}
 		
 		return builder.toString();
+	}
+	
+	/**
+	 * Tree#fromString(aTree#toString()).equals(aTree); // true
+	 * @param input A stringified Tree, as created by {@link Tree#toString()}
+	 * @return The parsed tree
+	 */
+	public static Tree fromString(String input) {
+		TreeTextParser parser = new TreeTextParser();
+		String[] lines = input.split(System.lineSeparator());
+		for (String line : lines) {
+			parser.addLine(line);
+		}
+		return parser.build();
 	}
 
 }
