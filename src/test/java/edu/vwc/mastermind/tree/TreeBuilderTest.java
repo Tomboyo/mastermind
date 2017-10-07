@@ -14,13 +14,13 @@ import org.junit.rules.ExpectedException;
 import edu.vwc.mastermind.sequence.Code;
 import edu.vwc.mastermind.sequence.Response;
 
-public class TreeStringParserTest {
+public class TreeBuilderTest {
 	
-	private TreeTextParser treeBuilder;
+	private TreeBuilder treeBuilder;
 	
 	@Before
 	public void createTree() {
-		treeBuilder = new TreeTextParser();
+		treeBuilder = new TreeBuilder();
 	}
 	
 	@Rule
@@ -73,7 +73,7 @@ public class TreeStringParserTest {
 
 	@Test
 	public void testTreeWithMultipleGroupedChildren() {
-		treeBuilder = new TreeTextParser();
+		treeBuilder = new TreeBuilder();
 		treeBuilder.addLine("[0,1]->[0,2,0][1,0]");
 		treeBuilder.addLine("[0,1]->[0,0,2][2,2]");
 		treeBuilder.addLine("[0,1]->[0,1,1][0,0]->[1,0,1][2,0]");

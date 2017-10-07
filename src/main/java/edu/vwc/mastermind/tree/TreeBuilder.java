@@ -7,22 +7,23 @@ import edu.vwc.mastermind.Integers;
 import edu.vwc.mastermind.sequence.Code;
 import edu.vwc.mastermind.sequence.Response;
 
-final class TreeTextParser {
+public final class TreeBuilder {
 	
 	private final StringBuilder workingEncodedTree;
 	
-	TreeTextParser() {
+	public TreeBuilder() {
 		workingEncodedTree = new StringBuilder();
 	}
 	
-	void addLine(String encodedInput) {
+	public TreeBuilder addLine(String encodedInput) {
 		if (workingEncodedTree.length() > 0) {
 			encodedInput = System.lineSeparator() + encodedInput.trim();
 		}
 		workingEncodedTree.append(encodedInput);
+		return this;
 	}
 
-	Tree build() {
+	public Tree build() {
 		String[] lines = workingEncodedTree.toString()
 				.split(System.lineSeparator());
 		if (lines.length == 0)

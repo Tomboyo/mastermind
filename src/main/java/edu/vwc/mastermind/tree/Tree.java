@@ -197,7 +197,7 @@ public class Tree implements Iterable<Entry<Response, Tree>> {
 	 * @return The parsed tree
 	 */
 	public static Tree fromString(String input) {
-		TreeTextParser parser = new TreeTextParser();
+		TreeBuilder parser = new TreeBuilder();
 		String[] lines = input.split(System.lineSeparator());
 		for (String line : lines) {
 			parser.addLine(line);
