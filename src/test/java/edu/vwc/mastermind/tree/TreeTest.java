@@ -36,11 +36,12 @@ public class TreeTest {
 	
 	@Test
 	public void testToStringCompatibleWithFromString() {
-		Tree tree = Tree.fromString(
-				"[0,1]->[0,2,0][1,0]"
-				+ "[0,1]->[0,0,2][2,2]"
-				+ "[0,1]->[0,1,1][0,0]->[1,0,1][2,0]"
-				+ "[0,1]->[0,1,1][0,0]->[0,0,2][1,2]");
+		Tree tree = new TreeBuilder()
+				.addLine("[0,1]->[0,2,0][1,0]")
+				.addLine("[0,1]->[0,0,2][2,2]")
+				.addLine("[0,1]->[0,1,1][0,0]->[1,0,1][2,0]")
+				.addLine("[0,1]->[0,1,1][0,0]->[0,0,2][1,2]")
+				.build();
 		
 		assertThat(Tree.fromString(tree.toString()), equalTo(tree));
 	}
