@@ -1,6 +1,3 @@
-Mastermind Play Algorithm
--------------------------
-
 The original draft of this program was developed by Tom Simmons (tomasimmons@gmail.com) as part of an undergraduate research project conducted at Virginia Wesleyan College (VWC), Norfolk, Virginia, USA, under the leadership of Dr. Audrey Malagon (amalagon@vwc.edu) and in conjunction with the efforts of co-researchers Tyler Chang (thchang@vwc.edu) and Samantha Eeanes (sceanes@vwc.edu). Our research objectives were to uncover the mathematical principles governing the 1970 board game [Mastermind](https://en.wikipedia.org/wiki/Mastermind_(board_game)) and the effect that permutations on the game's rules had on turns to win (e.g, the effects of varying the number of pegs or colors of pegs allowed in codes). The results of this research were presented at the 2014 Joint Mathematics Meetings (JMM) in Baltimore, Maryland, USA, under the title "The New Mastermind".
 
 The program as presented on Git is a refactored version of the original code that was used for research purposes. The program does not yet fully mirror the original design's capabilities; the original did precisely one thing relatively quickly and at the expense of flexibility and readability. This draft aims to be as extensible and intelligible as possible while maintaining as much performance as can be wrangled.
