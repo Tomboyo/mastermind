@@ -9,11 +9,9 @@ import static org.junit.Assume.assumeThat;
 
 import java.util.Arrays;
 
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import edu.vwc.mastermind.sequence.Code;
@@ -22,9 +20,6 @@ import edu.vwc.mastermind.sequence.Response;
 
 @RunWith(Theories.class)
 public class CodeTest {
-	
-	@Rule
-	public ExpectedException exception = ExpectedException.none();
 	
 	@Theory
 	public void testCompareFailsWhenCodesHaveDifferentLength(
