@@ -1,10 +1,11 @@
 package edu.vwc.mastermind.core;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.eq;
+import static org.easymock.EasyMock.expect;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.*;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -21,7 +22,7 @@ import edu.vwc.mastermind.sequence.provider.CodesProviderFactory;
 import edu.vwc.mastermind.tree.Tree;
 import edu.vwc.mastermind.tree.TreeBuilder;
 
-public class TreeFactoryTest {
+public class TreeFactoryTest extends EasyMockSupport {
 	
 	private Comparator<Tree> comparator;
 	private CodesProviderFactory providerFactory;
@@ -47,10 +48,10 @@ public class TreeFactoryTest {
 		Tree expected = new TreeBuilder()
 				.addLine("[0, 1]")
 				.build();
-		replay(comparator, providerFactory);
+		replayAll();
 		Tree actual = factory.newTree(
 				guess, alreadyGuessed, answersRemaining);
-		verify(comparator, providerFactory);
+		verifyAll();
 		assertThat(actual, equalTo((expected)));
 	}
 	
@@ -65,12 +66,12 @@ public class TreeFactoryTest {
 				.addLine("[0, 1]->[0, 0, 2][2, 2]")
 				.build();
 		
-		replay(comparator, providerFactory);
+		replayAll();
 		Tree actual = factory.newTree(
 				guess,
 				alreadyGuessed,
 				answersRemaining);
-		verify(comparator, providerFactory);
+		verifyAll();
 		assertThat(actual, equalTo(expected));
 	}
 	
@@ -95,12 +96,12 @@ public class TreeFactoryTest {
 				.addLine("[0, 1]->[0, 0, 2][2, 2]->[0, 0, 2][3, 3]")
 				.build();
 		
-		replay(comparator, providerFactory);
+		replayAll();
 		Tree actual = factory.newTree(
 				guess,
 				alreadyGuessed,
 				answersRemaining);
-		verify(comparator, providerFactory);
+		verifyAll();
 		assertThat(actual, equalTo(expected));
 	}
 	
