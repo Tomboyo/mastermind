@@ -84,6 +84,10 @@ public final class Code {
 		return sequence.clone();
 	}
 	
+	public int length() {
+		return sequence.length;
+	}
+	
 	/**
 	 * Compare this code against another and return the {@link Response} with
 	 * the results of the comparison.

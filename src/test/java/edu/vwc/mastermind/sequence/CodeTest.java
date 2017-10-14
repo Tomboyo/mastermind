@@ -1,120 +1,144 @@
 package edu.vwc.mastermind.sequence;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeThat;
 
 import java.util.Arrays;
-import java.util.Random;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.experimental.theories.Theories;
+import org.junit.experimental.theories.Theory;
+import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
 
 import edu.vwc.mastermind.sequence.Code;
+import edu.vwc.mastermind.sequence.CodeTheoriesHelper.CodeRange;
 import edu.vwc.mastermind.sequence.Response;
 
+@RunWith(Theories.class)
 public class CodeTest {
-
-	@Test
-	public void testCompareTo() {
-		try{
-			Code.valueOf(1, 1, 1).compareTo(Code.valueOf(1));
-			fail("compareTo should throw when codes have unequal length");
-		} catch (IllegalArgumentException shouldBeThrown) {}
+	
+	@Rule
+	public ExpectedException exception = ExpectedException.none();
+	
+	@Theory
+	public void testCompareFailsWhenCodesHaveDifferentLength(
+			@CodeRange Code a,
+			@CodeRange Code b) {
+		assumeThat(a.length(), not(equalTo(b.length())));
 		
-		try{
-			Code.valueOf(2).compareTo(Code.valueOf(1, 1, 1));
-			fail("compareTo should throw when codes have unequal length");
-		} catch (IllegalArgumentException shouldBeThrown) {}
+		try {
+			a.compareTo(b);
+			fail("Codes of unequal length should be incomperable");
+		} catch (IllegalArgumentException expected) {}
+	}
+	
+	@Theory
+	public void testCompareWithEqualCodesGivesExactMatchResponse(
+			@CodeRange Code a,
+			@CodeRange Code b) {
 		
-		// The guess has pegs all of the correct color and placement
-		assertEquals(Response.valueOf(1, 0, 0),
-				Code.valueOf(1).compareTo(Code.valueOf(1)));
-		assertEquals(Response.valueOf(2, 0, 0),
-				Code.valueOf(1, 2).compareTo(Code.valueOf(1, 2)));
+		assumeThat(a, equalTo(b));
 		
-		// The guess has misplaced pegs, and possibly some correct pegs.
-		assertEquals(Response.valueOf(0, 2, 0),
-				Code.valueOf(1, 2).compareTo(Code.valueOf(2, 1)));
-		assertEquals(Response.valueOf(0, 2, 0),
-				Code.valueOf(2, 1).compareTo(Code.valueOf(1, 2)));
-		// Correct pegs float left in the response sequence
-		assertEquals(Response.valueOf(1, 2, 0),
-				Code.valueOf(2, 1, 1).compareTo(Code.valueOf(1, 2, 1)));
-		assertEquals(Response.valueOf(1, 2, 0),
-				Code.valueOf(1, 1, 2).compareTo(Code.valueOf(1, 2, 1)));
+		Response actual = a.compareTo(b);
 		
-		// Guess has no pegs of the correct color
-		assertEquals(Response.valueOf(0, 0, 3),
-				Code.valueOf(1, 1, 1).compareTo(Code.valueOf(2, 2, 2)));
+		assertThat(actual.getExact(), equalTo(a.length()));
+		assertThat(actual.getInexact(), equalTo(0));
+		assertThat(actual.getWrong(), equalTo(0));
+	}
+	
+	@Theory
+	public void testCompareWithUnequalCodesDoesNotGiveExactMatchResponse(
+			@CodeRange Code a,
+			@CodeRange Code b) {
+		assumeThat(a, not(equalTo(b)));
+		assumeThat(a.length(), equalTo(b.length()));
+		
+		Response actual = a.compareTo(b);
+		assertThat(actual.getExact(), lessThan(a.length()));
+		assertThat(actual.getInexact(), lessThanOrEqualTo(a.length()));
+		assertThat(actual.getWrong(), lessThanOrEqualTo(a.length()));
+		assertThat(actual.getExact() + actual.getInexact() + actual.getWrong(),
+				equalTo(a.length()));
 	}
 	
 	@Test
-	public void testValueOf() {
-		// Code.valueOf() returns the canonical instance
-		assertTrue(Code.valueOf(1, 2, 3) == Code.valueOf(1, 2, 3));
+	public void testCompareToWithExactMatches() {
+		assertThat(Code.valueOf(0).compareTo(Code.valueOf(0)),
+				equalTo(Response.valueOf(1, 0, 0)));
+		assertThat(Code.valueOf(1).compareTo(Code.valueOf(1)),
+				equalTo(Response.valueOf(1, 0, 0)));
+		
+		assertThat(Code.valueOf(0, 1).compareTo(Code.valueOf(0, 1)),
+				equalTo(Response.valueOf(2, 0, 0)));
+		
+		assertThat(Code.valueOf(5, 8, 1).compareTo(Code.valueOf(5, 8, 1)),
+				equalTo(Response.valueOf(3, 0, 0)));
 	}
 	
 	@Test
-	public void testImmutability() {
+	public void testCompareToWithInexactMatches() {
+		assertThat(Code.valueOf(1, 0).compareTo(Code.valueOf(0, 1)),
+				equalTo(Response.valueOf(0, 2, 0)));
+		
+		assertThat(Code.valueOf(1, 0, 1).compareTo(Code.valueOf(1, 1, 0)),
+				equalTo(Response.valueOf(1, 2, 0)));
+		
+		assertThat(Code.valueOf(1, 2, 3).compareTo(Code.valueOf(3, 1, 2)),
+				equalTo(Response.valueOf(0, 3, 0)));
+		
+		assertThat(Code.valueOf(1, 2, 3, 4).compareTo(Code.valueOf(1, 2, 4, 3)),
+				equalTo(Response.valueOf(2, 2, 0)));
+	}
+	
+	@Theory
+	public void testAllCodesAreCanonical(@CodeRange Code a, @CodeRange Code b) {
+		assumeThat(a, equalTo(b));
+		assertTrue(a == b);
+	}
+	
+	@Test
+	public void testSourceArrayDoesNotMutateCode() {
 		int[] sequence = new int[]{1, 2, 3};
 		Code code = Code.valueOf(sequence);
 		sequence[0] = 7;
 		
-		// Code's internal representation is detached from the array used to
-		// create it, so altering sequence does not alter Code
-		assertTrue(code == Code.valueOf(1, 2, 3));
+		assertThat(code.toArray()[0], equalTo(1));
 	}
 	
 	@Test
 	public void testToArray() {
-		Code code = Code.valueOf(1, 2, 3);
-		int[] asArray = code.toArray();
-		asArray[0] = 17;
+		assertTrue(Arrays.equals(
+				Code.valueOf(1, 2, 3).toArray(),
+				new int[]{1, 2, 3}));
 		
-		// Code's internal representation is detached from the array view it
-		// returns, so altering asArray does not alter Code
-		assertTrue(Arrays.equals(code.toArray(), new int[] { 1, 2, 3 }));
+		assertTrue(Arrays.equals(
+				Code.valueOf(new int[]{1, 2, 3}).toArray(),
+				new int[]{1, 2, 3}));
 	}
-
+	
+	@Theory
+	public void testHashCodeEqualityContract(
+			@CodeRange Code a,
+			@CodeRange Code b) {
+		assumeThat(a, equalTo(b));
+		assertThat(a.hashCode(), equalTo(b.hashCode()));
+	}
+	
+	@Theory
+	public void testCodeLength(@CodeRange Code code) {
+		assertThat(code.length(), equalTo(code.toArray().length));
+	}
+	
 	@Test
-	public void testEquality() {
-		Code code1 = Code.valueOf(1, 9, 3, 1);
-		Code code2 = Code.valueOf(1, 9, 3, 1);
-		
-		// All instances are canonical and therefore may be compared with object
-		// equality
-		assertTrue(code1 == code2);
-		assertTrue(code1.equals(code2));
-		assertTrue(code1.hashCode() == code2.hashCode());
-		
-		/*
-		 * Create and compare some random codes
-		 */
-		Random rand = new Random();
-		for (int i = 0; i < 100; i++) {
-			final int length = rand.nextInt(10) + 1;
-			final int colors = rand.nextInt(1000) + 1;
-			
-			// Create a sequence based on the random parameters
-			int[] sequence = new int[length];
-			for (int j = 0; j < length; j++) {
-				sequence[j] = rand.nextInt(colors) + 1;
-			}
-			
-			code1 = Code.valueOf(sequence);
-			code2 = Code.valueOf(sequence);
-			assertTrue(code1 == code2);
-			assertTrue(code1.equals(code2));
-			assertTrue(code1.hashCode() == code2.hashCode());
-			
-			// A Code can have negative pegs, but the above logic never uses
-			// them. This therefore makes the codes unequal.
-			sequence[rand.nextInt(length)] = -1;
-			code2 = Code.valueOf(sequence);
-			
-			assertFalse(String.format("%s == %s", code1, code2),
-					code1 == code2);
-			assertFalse(String.format("%s .equals %s", code1, code2),
-					code1.equals(code2));
-		}
+	public void testCodeLength2() {
+		assertThat(Code.valueOf(0).length(), equalTo(1));
+		assertThat(Code.valueOf(1, 2, 3, 4).length(), equalTo(4));
 	}
 
 }

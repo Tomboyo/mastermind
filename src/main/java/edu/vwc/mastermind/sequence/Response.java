@@ -66,6 +66,18 @@ public final class Response {
 		
 		return response;
 	}
+	
+	public int getExact() {
+		return exact;
+	}
+	
+	public int getInexact() {
+		return inexact;
+	}
+	
+	public int getWrong() {
+		return wrong;
+	}
 
 	@Override
 	public int hashCode() {
