@@ -26,7 +26,6 @@ import org.apache.commons.collections4.map.MultiKeyMap;
  */
 public final class Code {
 
-	//private static final Map<Integer, Code> cache = new HashMap<>();
 	private static final MultiKeyMap<Integer, Code> cache =
 			MultiKeyMap.multiKeyMap(new HashedMap<>());
 	
