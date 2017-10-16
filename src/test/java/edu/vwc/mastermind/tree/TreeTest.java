@@ -1,37 +1,39 @@
 package edu.vwc.mastermind.tree;
 
+import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.*;
 
+import java.util.Arrays;
+
+import org.hamcrest.Matcher;
 import org.junit.Test;
 
-import edu.vwc.mastermind.sequence.Code;
-import edu.vwc.mastermind.sequence.Response;
+
 
 public class TreeTest {
-
+	
 	@Test
 	public void testEquals() {
-		assertEquals(constructTree(), constructTree());
+		assertThat(Tree.fromString("[1, 1]"),
+				equalTo(Tree.fromString("[1, 1]")));
+
+		// Note: An impossible tree, but convenient for testing
+		Tree actual = Tree.fromString("[1, 1]->[1, 1, 1][1, 1]");
+		
+		assertThat(actual, not(anyOf(Arrays.asList(
+				equalToTree("[0, 1]->[1, 1, 1][1, 1]"),
+				equalToTree("[1, 0]->[1, 1, 1][1, 1]"),
+				equalToTree("[1, 1]->[0, 1, 1][1, 1]"),
+				equalToTree("[1, 1]->[1, 0, 1][1, 1]"),
+				equalToTree("[1, 1]->[1, 1, 0][1, 1]"),
+				equalToTree("[1, 1]->[1, 1, 1][0, 1]"),
+				equalToTree("[1, 1]->[1, 1, 1][1, 0]")))));
 	}
 	
-	private Tree constructTree() {
-		Tree root = new Tree(Code.valueOf(0, 0));
-		
-		root.add(Response.valueOf(1, 0, 1), new Tree(Code.valueOf(0, 1)));
-		root.add(Response.valueOf(1, 0, 1), new Tree(Code.valueOf(0, 2)));
-		root.add(Response.valueOf(0, 0, 2), new Tree(Code.valueOf(1, 2)));
-		
-		Tree a = new Tree(Code.valueOf(1, 1));
-		a.add(Response.valueOf(0, 0, 0), new Tree(Code.valueOf(0, 0)));
-		root.add(Response.valueOf(0, 0, 2), a);
-		
-		Tree b = new Tree(Code.valueOf(1, 2));
-		b.add(Response.valueOf(0, 0, 2), new Tree(Code.valueOf(0, 0)));
-		b.add(Response.valueOf(0, 1, 1), new Tree(Code.valueOf(0, 1)));
-		root.add(Response.valueOf(0, 0, 2), b);
-		
-		return root;
+	private Matcher<Tree> equalToTree(String encoding) {
+		return equalTo(Tree.fromString(encoding));
 	}
 	
 	@Test
