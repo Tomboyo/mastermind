@@ -1,8 +1,10 @@
 package edu.vwc.mastermind.sequence;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+
+import org.apache.commons.collections4.keyvalue.MultiKey;
+import org.apache.commons.collections4.map.HashedMap;
+import org.apache.commons.collections4.map.MultiKeyMap;
 
 /**
  * Represents the colored-peg sequences that players make in a game of
@@ -24,14 +26,14 @@ import java.util.Map;
  */
 public final class Code {
 
-	private static final Map<Integer, Code> cache = new HashMap<>();
+	//private static final Map<Integer, Code> cache = new HashMap<>();
+	private static final MultiKeyMap<Integer, Code> cache =
+			MultiKeyMap.multiKeyMap(new HashedMap<>());
 	
 	private final int[] sequence;
-	private final int hash;
 
-	private Code(int... sequence) {
+	private Code(int[] sequence) {
 		this.sequence = sequence.clone();
-		hash = generateHash(this.sequence);
 	}
 	
 	/**
@@ -42,7 +44,7 @@ public final class Code {
 	 * @return The canonical Code instance for this sequence
 	 */
 	public static Code valueOf(int[] sequence) {
-		int key = generateHash(sequence);
+		MultiKey<Integer> key = getKey(sequence);
 		Code code = cache.get(key);
 		if (code == null) {
 			synchronized (cache) {
@@ -53,6 +55,13 @@ public final class Code {
 			}
 		}
 		return code;
+	}
+	
+	private static MultiKey<Integer> getKey(int[] sequence) {
+		Integer[] boxedSequence = new Integer[sequence.length];
+		for (int i = 0; i < sequence.length; i++)
+			boxedSequence[i] = sequence[i];
+		return new MultiKey<>(boxedSequence);
 	}
 	
 	/**
@@ -136,24 +145,7 @@ public final class Code {
 	}
 
 	@Override
-	public int hashCode() {
-		return hash;
-	}
-
-	/**
-	 * Because response objects are canonical, we use reference equality.
-	 */
-	@Override
-	public final boolean equals(Object other) {
-		return this == other;
-	}
-	
-	@Override
 	public String toString() {
 		return Arrays.toString(sequence);
-	}
-	
-	private static int generateHash(int[] sequence) {
-		return Arrays.hashCode(sequence);
 	}
 }

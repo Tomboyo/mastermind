@@ -1,7 +1,7 @@
 package edu.vwc.mastermind.sequence;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.commons.collections4.map.HashedMap;
+import org.apache.commons.collections4.map.MultiKeyMap;
 
 /**
  * Represents the feedback from comparing a guess code against the unknown
@@ -23,18 +23,17 @@ import java.util.Map;
  */
 public final class Response {
 
-	private static final Map<Integer, Response> cache = new HashMap<>();
+	private static final MultiKeyMap<Integer, Response> cache =
+			MultiKeyMap.multiKeyMap(new HashedMap<>());
 	
 	private final int exact;
 	private final int inexact;
 	private final int wrong;
-	private final int hash;
 
 	private Response(int exact, int inexact, int wrong) {
 		this.exact = exact;
 		this.inexact = inexact;
-		this.wrong = wrong;		
-		this.hash = generateHash(this.exact, this.inexact, this.wrong);
+		this.wrong = wrong;
 	}
 	
 	/**
@@ -54,18 +53,18 @@ public final class Response {
 	 */
 	public static Response valueOf(int exact, int inexact, int wrong) {
 		if (exact < 0 || inexact < 0 || wrong < 0)
-			throw new IllegalArgumentException("Feedback can not be negative");
+			throw new IllegalArgumentException(
+					"Feedback can not contain negative values");
 		if (exact == 0 && inexact == 0 && wrong == 0)
 			throw new IllegalArgumentException(
 					"Feedback must contain a positive value");
 		
-		int key = generateHash(exact, inexact, wrong);
-		Response response = cache.get(key);
+		Response response = cache.get(exact, inexact, wrong);
 		if (response == null) {
 			synchronized (cache) {
-				if ((response = cache.get(key)) == null) {
+				if ((response = cache.get(exact, inexact, wrong)) == null) {
 					response = new Response(exact, inexact, wrong);
-					cache.put(key, response);
+					cache.put(exact, inexact, wrong, response);
 				}
 			}
 		}
@@ -84,30 +83,9 @@ public final class Response {
 	public int getWrong() {
 		return wrong;
 	}
-
-	@Override
-	public int hashCode() {
-		return hash;
-	}
-
-	/**
-	 * Because response objects are canonical, we use reference equality.
-	 */
-	@Override
-	public final boolean equals(Object other) {
-		return this == other;
-	}
 	
 	@Override
 	public String toString() {
 		return String.format("[%s, %s, %s]", exact, inexact, wrong);
-	}
-	
-	private static int generateHash(int a, int b, int c) {
-		int hashCode = 1;
-		hashCode = 31 * hashCode + a;
-		hashCode = 31 * hashCode + b;
-		hashCode = 31 * hashCode + c;
-		return hashCode;
 	}
 }
