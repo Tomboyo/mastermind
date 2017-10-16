@@ -141,14 +141,11 @@ public final class Code {
 	}
 
 	/**
-	 * Two Codes are considered equal if and only if they are the same length
-	 * and have identical numbers ("pegs") in identical positions.
+	 * Because response objects are canonical, we use reference equality.
 	 */
 	@Override
 	public final boolean equals(Object other) {
-		if (other == this) return true;
-		if (!(other instanceof Code)) return false;
-		return Arrays.equals(sequence, ((Code) other).sequence);
+		return this == other;
 	}
 	
 	@Override
