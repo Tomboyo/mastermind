@@ -2,7 +2,6 @@ package edu.vwc.mastermind.sequence;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
