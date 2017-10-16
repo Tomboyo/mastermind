@@ -33,7 +33,7 @@ public final class Response {
 	private Response(int exact, int inexact, int wrong) {
 		this.exact = exact;
 		this.inexact = inexact;
-		this.wrong = wrong;
+		this.wrong = wrong;		
 		this.hash = generateHash(this.exact, this.inexact, this.wrong);
 	}
 	
@@ -53,6 +53,12 @@ public final class Response {
 	 * @return A canonical response object for the given feedback values
 	 */
 	public static Response valueOf(int exact, int inexact, int wrong) {
+		if (exact < 0 || inexact < 0 || wrong < 0)
+			throw new IllegalArgumentException("Feedback can not be negative");
+		if (exact == 0 && inexact == 0 && wrong == 0)
+			throw new IllegalArgumentException(
+					"Feedback must contain a positive value");
+		
 		int key = generateHash(exact, inexact, wrong);
 		Response response = cache.get(key);
 		if (response == null) {
@@ -85,19 +91,11 @@ public final class Response {
 	}
 
 	/**
-	 * Two responses are considered equal if and only if they indicate the same
-	 * number of exact, inexact, and wrong pegs in a guess.
+	 * Because response objects are canonical, we use reference equality.
 	 */
 	@Override
 	public final boolean equals(Object other) {
-		if (other == this)
-			return true;
-		if (!(other instanceof Response))
-			return false;
-		Response r = (Response) other;
-		return this.exact == r.exact
-				&& this.inexact == r.inexact
-				&& this.wrong == r.wrong;
+		return this == other;
 	}
 	
 	@Override
