@@ -88,12 +88,12 @@ public class TreeFactoryTest extends EasyMockSupport {
 		expect(comparator.compare(eq(null), anyObject()))
 				.andReturn(1);
 		expect(comparator.compare(
-				Tree.fromString("[2, 2]->[0, 0, 2][3, 3]"),
-				Tree.fromString("[3, 3]->[0, 0, 2][2, 2]")))
+				Tree.fromString("[3, 3]->[0, 0, 2][2, 2]"),
+				Tree.fromString("[2, 2]->[0, 0, 2][3, 3]")))
 				.andReturn(-1);
 		
 		Tree expected = new TreeBuilder()
-				.addLine("[0, 1]->[0, 0, 2][2, 2]->[0, 0, 2][3, 3]")
+				.addLine("[0, 1]->[0, 0, 2][3, 3]->[0, 0, 2][2, 2]")
 				.build();
 		
 		replayAll();
