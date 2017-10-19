@@ -2,7 +2,6 @@ package edu.vwc.mastermind.core;
 
 import java.util.concurrent.ExecutionException;
 
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import edu.vwc.mastermind.tree.Tree;
