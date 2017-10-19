@@ -1,5 +1,6 @@
 package edu.vwc.mastermind.core;
 
+import static edu.vwc.mastermind.TestHelper.setOfCodes;
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
@@ -8,7 +9,6 @@ import static org.junit.Assert.*;
 
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.easymock.EasyMockSupport;
@@ -42,7 +42,7 @@ public class TreeFactoryTest extends EasyMockSupport {
 	public void testCorrectGuessHasNoChildren() {
 		Code guess = Code.valueOf(0, 1);
 		Set<Code> alreadyGuessed = new HashSet<>();
-		Set<Code> answersRemaining = toSet(guess);
+		Set<Code> answersRemaining = setOfCodes(guess);
 		TreeFactory factory = newTreeFactory(Response.valueOf(2, 0, 0));
 		
 		Tree expected = new TreeBuilder()
@@ -59,7 +59,7 @@ public class TreeFactoryTest extends EasyMockSupport {
 	public void onlyRemainingAnswerInGroupIsNextGuess() {
 		Code guess = Code.valueOf(0, 1);
 		Set<Code> alreadyGuessed = new HashSet<>();
-		Set<Code> answersRemaining = toSet(Code.valueOf(2, 2));
+		Set<Code> answersRemaining = setOfCodes(Code.valueOf(2, 2));
 		TreeFactory factory = newTreeFactory(Response.valueOf(2, 0, 0));
 		
 		Tree expected = new TreeBuilder()
@@ -79,7 +79,7 @@ public class TreeFactoryTest extends EasyMockSupport {
 	public void testAnswersInGroupAreAllGuessedAndCompared() {
 		Code guess = Code.valueOf(0, 1);
 		Set<Code> alreadyGuessed = new HashSet<>();
-		Set<Code> answersRemaining = toSet(
+		Set<Code> answersRemaining = setOfCodes(
 				Code.valueOf(2, 2), Code.valueOf(3, 3));
 		TreeFactory factory = newTreeFactory(Response.valueOf(2, 0, 0));
 		
@@ -103,16 +103,6 @@ public class TreeFactoryTest extends EasyMockSupport {
 				answersRemaining);
 		verifyAll();
 		assertThat(actual, equalTo(expected));
-	}
-	
-	private Set<Code> toSet(Code...codes) {
-		// Set implementation choice can change the order in which Trees are
-		// generated and compared during the test. Prefer the linkedHashSet.
-		Set<Code> set = new LinkedHashSet<>();
-		for (Code c : codes) {
-			set.add(c);
-		}
-		return set;
 	}
 
 }
