@@ -24,7 +24,7 @@ public class Main {
 		Controller controller = context.getBean("controller", Controller.class);
 		
 		try {
-			Tree tree = controller.simulate();
+			Tree tree = controller.newOptimizedStrategyTree();
 			System.out.println("Startegy tree maximum turns: " + tree.depth());
 			System.out.println(tree);
 		} catch (ExecutionException | InterruptedException e) {
