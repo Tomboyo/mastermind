@@ -49,7 +49,8 @@ public class TreeFactory {
 	 *         on decisions made by the configured {@link Comparator<Tree>} and
 	 *         {@link CodesProviderFactory}.
 	 */
-	public Tree newTree(Code guess, Set<Code> guessed, Set<Code> answers) {
+	public Tree newTree(Code guess, Set<Code> alreadyGuessed, Set<Code> answers) {
+		Set<Code> guessed = new LinkedHashSet<>(alreadyGuessed);
 		Tree root = new Tree(guess);
 		guessed.add(guess);
 		
