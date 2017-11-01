@@ -26,16 +26,15 @@ public class TreeFactoryTest extends EasyMockSupport {
 	
 	private Comparator<Tree> comparator;
 	private CodesProviderFactory providerFactory;
+	private TreeFactory factory;
 	
 	@SuppressWarnings("unchecked")
 	@Before
 	public void setUp() {
 		comparator = createMock(Comparator.class);
 		providerFactory = createMock(CodesProviderFactory.class);
-	}
-	
-	private TreeFactory newTreeFactory(Response correct) {
-		return new TreeFactory(comparator, providerFactory);
+		
+		factory = new TreeFactory(comparator, providerFactory);
 	}
 	
 	@Test
@@ -43,7 +42,6 @@ public class TreeFactoryTest extends EasyMockSupport {
 		Code guess = Code.valueOf(0, 1);
 		Set<Code> alreadyGuessed = new HashSet<>();
 		Set<Code> answersRemaining = setOfCodes(guess);
-		TreeFactory factory = newTreeFactory(Response.valueOf(2, 0, 0));
 		
 		Tree expected = new TreeBuilder()
 				.addLine("[0, 1]")
@@ -60,7 +58,6 @@ public class TreeFactoryTest extends EasyMockSupport {
 		Code guess = Code.valueOf(0, 1);
 		Set<Code> alreadyGuessed = new HashSet<>();
 		Set<Code> answersRemaining = setOfCodes(Code.valueOf(2, 2));
-		TreeFactory factory = newTreeFactory(Response.valueOf(2, 0, 0));
 		
 		Tree expected = new TreeBuilder()
 				.addLine("[0, 1]->[0, 0, 2][2, 2]")
@@ -78,10 +75,9 @@ public class TreeFactoryTest extends EasyMockSupport {
 	@Test
 	public void testAnswersInGroupAreAllGuessedAndCompared() {
 		Code guess = Code.valueOf(0, 1);
-		Set<Code> alreadyGuessed = new HashSet<>();
+		Set<Code> alreadyGuessed = setOfCodes(guess);
 		Set<Code> answersRemaining = setOfCodes(
 				Code.valueOf(2, 2), Code.valueOf(3, 3));
-		TreeFactory factory = newTreeFactory(Response.valueOf(2, 0, 0));
 		
 		expect(providerFactory.getInstance(alreadyGuessed, answersRemaining))
 				.andReturn(() -> new HashSet<>(answersRemaining));
