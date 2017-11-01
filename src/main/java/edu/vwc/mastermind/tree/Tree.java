@@ -3,6 +3,7 @@ package edu.vwc.mastermind.tree;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -25,6 +26,7 @@ public class Tree implements Iterable<Entry<Response, Tree>> {
 	 *            tree.
 	 */
 	public Tree(Code guess) {
+		Objects.requireNonNull(guess);
 		this.guess = guess;
 		children = new LinkedHashMap<>();
 	}
@@ -54,6 +56,8 @@ public class Tree implements Iterable<Entry<Response, Tree>> {
 	 *            in the strategy tree.
 	 */
 	public void add(Response key, Tree child) {
+		Objects.requireNonNull(key);
+		Objects.requireNonNull(child);
 		children.put(key, child);
 	}
 	
@@ -109,6 +113,7 @@ public class Tree implements Iterable<Entry<Response, Tree>> {
 	}
 	
 	public static Tree copyOf(Tree other) {
+		Objects.requireNonNull(other);
 		Tree root = new Tree(other.guess);
 		other.children.forEach((response, tree) -> {
 			root.add(response, copyOf(tree));
