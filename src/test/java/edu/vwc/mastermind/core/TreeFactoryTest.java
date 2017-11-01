@@ -35,7 +35,7 @@ public class TreeFactoryTest extends EasyMockSupport {
 	}
 	
 	private TreeFactory newTreeFactory(Response correct) {
-		return new TreeFactory(correct, comparator, providerFactory);
+		return new TreeFactory(comparator, providerFactory);
 	}
 	
 	@Test
@@ -92,9 +92,8 @@ public class TreeFactoryTest extends EasyMockSupport {
 				Tree.fromString("[2, 2]->[0, 0, 2][3, 3]")))
 				.andReturn(-1);
 		
-		Tree expected = new TreeBuilder()
-				.addLine("[0, 1]->[0, 0, 2][3, 3]->[0, 0, 2][2, 2]")
-				.build();
+		Tree expected = Tree.fromString(
+				"[0, 1]->[0, 0, 2][3, 3]->[0, 0, 2][2, 2]");
 		
 		replayAll();
 		Tree actual = factory.newTree(

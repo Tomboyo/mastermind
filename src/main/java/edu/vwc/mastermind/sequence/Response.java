@@ -84,6 +84,11 @@ public final class Response {
 		return wrong;
 	}
 	
+	public boolean isCorrect() {
+		return wrong == 0
+				&& inexact == 0;
+	}
+	
 	@Override
 	public String toString() {
 		return String.format("[%s, %s, %s]", exact, inexact, wrong);

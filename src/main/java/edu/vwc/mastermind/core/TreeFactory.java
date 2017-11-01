@@ -1,8 +1,8 @@
 package edu.vwc.mastermind.core;
 
 import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -21,13 +21,12 @@ import edu.vwc.mastermind.tree.Tree;
  */
 public class TreeFactory {
 	
-	private Response correct;
 	private Comparator<Tree> comparator;
 	private CodesProviderFactory guessProviderFactory;
 	
-	public TreeFactory(Response correct, Comparator<Tree> comparator,
+	public TreeFactory(
+			Comparator<Tree> comparator,
 			CodesProviderFactory guessProviderFactory) {
-		this.correct = correct;
 		this.comparator = comparator;
 		this.guessProviderFactory = guessProviderFactory;
 	}
@@ -58,16 +57,11 @@ public class TreeFactory {
 		 * Compare guess to answers, then group the answers by the response they
 		 * yield.
 		 */
-		Map<Response, Set<Code>> answerGroups = new LinkedHashMap<>();
+		Map<Response, Set<Code>> answerGroups = new HashMap<>();
 		for (Code answer : answers) {
 			Response key = guess.compareTo(answer);
-			
-			Set<Code> group = answerGroups.get(key);
-			if (group == null) {
-				group = new LinkedHashSet<>();
-				answerGroups.put(key, group);
-			}
-			group.add(answer);
+			answerGroups.putIfAbsent(key, new HashSet<>());
+			answerGroups.get(key).add(answer);
 		}
 		
 		/*
@@ -76,10 +70,10 @@ public class TreeFactory {
 		for (Entry<Response, Set<Code>> group : answerGroups.entrySet()) {
 			Set<Code> answersLeft = group.getValue();
 			
-			if (group.getKey() == correct) {
-				// do not add a child node in this case
-			} else if (answersLeft.size() == 1) {
-				// Add the correct answer node
+			if (group.getKey().isCorrect())
+				continue;
+			
+			if (answersLeft.size() == 1) {
 				root.add(group.getKey(),
 						new Tree(answersLeft.iterator().next()));
 			} else {
@@ -89,9 +83,9 @@ public class TreeFactory {
 						.getInstance(guessed, answersLeft)
 						.getCodes();
 				for (Code nextGuess : nextGuesses) {
-					Set<Code> nextGuessed = new LinkedHashSet<>();
+					Set<Code> nextGuessed = new HashSet<>();
 					nextGuessed.addAll(guessed);
-					Set<Code> nextAnswers = new LinkedHashSet<>();
+					Set<Code> nextAnswers = new HashSet<>();
 					nextAnswers.addAll(answersLeft);
 					nextAnswers.remove(guess);
 					Tree next = newTree(nextGuess, nextGuessed, nextAnswers);
