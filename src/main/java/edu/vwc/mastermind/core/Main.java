@@ -1,7 +1,6 @@
 package edu.vwc.mastermind.core;
 
 import java.util.Comparator;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;

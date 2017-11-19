@@ -13,7 +13,7 @@ import edu.vwc.mastermind.tree.Tree;
 public class ParallelizedTreeFactory {
 	private final CompletionService<Tree> completionService;
 	private final TreeFactory treeFactory;
-	private volatile int guessesMade;
+	private int guessesMade;
 	
 	public ParallelizedTreeFactory(
 			ExecutorService executor,
