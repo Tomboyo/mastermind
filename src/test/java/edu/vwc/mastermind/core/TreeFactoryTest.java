@@ -1,8 +1,6 @@
 package edu.vwc.mastermind.core;
 
 import static edu.vwc.mastermind.TestHelper.setOfCodes;
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.*;
@@ -18,10 +16,8 @@ import org.junit.Test;
 
 import edu.vwc.mastermind.core.TreeFactory;
 import edu.vwc.mastermind.sequence.Code;
-import edu.vwc.mastermind.sequence.Response;
 import edu.vwc.mastermind.sequence.provider.CodesProviderFactory;
 import edu.vwc.mastermind.tree.Tree;
-import edu.vwc.mastermind.tree.TreeBuilder;
 
 public class TreeFactoryTest extends EasyMockSupport {
 	
@@ -44,9 +40,8 @@ public class TreeFactoryTest extends EasyMockSupport {
 		Set<Code> alreadyGuessed = new HashSet<>();
 		Set<Code> answersRemaining = setOfCodes(guess);
 		
-		Tree expected = new TreeBuilder()
-				.addLine("[0, 1]")
-				.build();
+		Tree expected = Tree.fromString("[0, 1]");
+		
 		replayAll();
 		Tree actual = factory.newTree(
 				guess, alreadyGuessed, answersRemaining);
@@ -60,9 +55,7 @@ public class TreeFactoryTest extends EasyMockSupport {
 		Set<Code> alreadyGuessed = new HashSet<>();
 		Set<Code> answersRemaining = setOfCodes(Code.valueOf(2, 2));
 		
-		Tree expected = new TreeBuilder()
-				.addLine("[0, 1]->[0, 0, 2][2, 2]")
-				.build();
+		Tree expected = Tree.fromString("[0, 1]->[0, 0, 2][2, 2]");
 		
 		replayAll();
 		Tree actual = factory.newTree(
