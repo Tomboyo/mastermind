@@ -4,70 +4,54 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="colors" class="java.lang.Integer">
+	<bean id="colors"
+	class="java.lang.Integer">
 		<constructor-arg value="3"/>
 	</bean>
 	
-	<bean id="pegs" class="java.lang.Integer">
+	<bean id="pegs"
+	class="java.lang.Integer">
 		<constructor-arg value="2"/>
 	</bean>
-
-	<bean id="controller" class="edu.vwc.mastermind.core.Controller">
-		<!-- The "correct" Response instance, in this case for a game with 3 pegs -->
-		<constructor-arg type="edu.vwc.mastermind.sequence.Response">
-			<bean id="correct.response"
-			class="edu.vwc.mastermind.sequence.Response"
-				factory-method="valueOf">
-				<constructor-arg index="0" ref="pegs" />
-				<constructor-arg index="1" value="0" />
-				<constructor-arg index="2" value="0" />
-			</bean>
-		</constructor-arg>
-
-		<!-- A Tree comparator that sorts desired strategy trees, where better 
-			< worse. minRequiredTurns prefers strategy trees that minimize the maximum 
-			number of turns strictly necessary to win -->
-		<constructor-arg type="java.util.Comparator">
-			<bean id="comparator"
-			class="edu.vwc.mastermind.tree.compare.Comparators"
-				factory-method="minRequiredTurns" />
-		</constructor-arg>
-
-
-		<!-- Provides codes to guess; exhausts all reasonable options -->
-		<constructor-arg
-			type="edu.vwc.mastermind.sequence.provider.CodesProviderFactory">
-			<bean id="guessCodesProviderFactory"
-			class="edu.vwc.mastermind.sequence.provider.AllCodesProviderFactory">
-				<constructor-arg
-					type="edu.vwc.mastermind.sequence.provider.CodesProvider">
-					<bean class="edu.vwc.mastermind.sequence.provider.AllCodesProvider">
-						<constructor-arg type="int" ref="colors" />
-						<constructor-arg type="int" ref="pegs" />
-					</bean>
-				</constructor-arg>
-			</bean>
-		</constructor-arg>
-
-		<!-- Try each and every code (in a 3 color, 3 peg game) as a first guess -->
-		<constructor-arg type="edu.vwc.mastermind.sequence.provider.CodesProvider">
-			<bean id="guessCodeProvider"
-			class="edu.vwc.mastermind.sequence.provider.Providers"
-				factory-method="allCodes">
-				<constructor-arg type="int" ref="colors" />
-				<constructor-arg type="int" ref="pegs" />
-			</bean>
-		</constructor-arg>
-
-		<!-- The universe of codes (potential answers) -->
-		<constructor-arg type="edu.vwc.mastermind.sequence.provider.CodesProvider">
-			<bean id="goalCodeProvider"
-			class="edu.vwc.mastermind.sequence.provider.Providers"
-				factory-method="allCodes">
-				<constructor-arg type="int" ref="colors" />
-				<constructor-arg type="int" ref="pegs" />
-			</bean>
-		</constructor-arg>
+	
+	<bean id="provider"
+	class="edu.vwc.mastermind.sequence.provider.AllCodesProvider">
+		<constructor-arg type="int" ref="colors" />
+		<constructor-arg type="int" ref="pegs" />
 	</bean>
+	
+	<!-- Set of all Codes to use as first guesses -->
+	<bean id="first_guesses"
+	class="java.util.Set"
+	factory-bean="provider"
+	factory-method="getCodes" />
+	
+	<!-- Set of all Codes which must be guessed eventually (the answers) -->
+	<bean id="all_answers"
+	class="java.util.Set"
+	factory-bean="provider"
+	factory-method="getCodes" />
+	
+	<!-- A Tree comparator that sorts desired strategy trees, where better 
+		is "less than" worse. -->
+	<bean id="comparator"
+	class="edu.vwc.mastermind.tree.compare.RequiredTurnsComparator">
+	</bean>
+
+	<!-- Decides what codes to guess after each subsequent guess. This allows 
+		a greedy implementation that skips certain guesses, or an exhaustive one 
+		that guesses everything. -->
+	<bean id="factory"
+	class="edu.vwc.mastermind.sequence.provider.AllCodesProviderFactory">
+		<constructor-arg
+		type="edu.vwc.mastermind.sequence.provider.CodesProvider"
+		ref="provider" />
+	</bean>
+
+	<!-- Defines the threading context in which the strategy tree is generated.
+	-->
+	<bean id="executor"
+	class="java.util.concurrent.Executors"
+	factory-method="newCachedThreadPool" />
 
 </beans>

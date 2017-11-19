@@ -105,10 +105,12 @@ public final class Code {
 	 * @return A Response object indicating the results of the comparison
 	 */
 	public Response compareTo(Code other) {
-		if (other.sequence.length != sequence.length) {
+		if (other.sequence.length != sequence.length)
 			throw new IllegalArgumentException(
 					"Codes of unequal length are incomperable");
-		}
+		
+		if (this == other)
+			return Response.valueOf(length(), 0, 0);
 
 		int exact, inexact;
 		exact = inexact = 0;
