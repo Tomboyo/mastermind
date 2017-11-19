@@ -82,8 +82,6 @@ public class TreeFactoryTest extends EasyMockSupport {
 		
 		expect(providerFactory.getInstance(alreadyGuessed, answersRemaining))
 				.andReturn(() -> new LinkedHashSet<>(answersRemaining));
-		expect(comparator.compare(eq(null), anyObject()))
-				.andReturn(1);
 		expect(comparator.compare(
 				Tree.fromString("[3, 3]->[0, 0, 2][2, 2]"),
 				Tree.fromString("[2, 2]->[0, 0, 2][3, 3]")))

@@ -1,8 +1,10 @@
 package edu.vwc.mastermind.core;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -49,56 +51,72 @@ public class TreeFactory {
 	 *         on decisions made by the configured {@link Comparator<Tree>} and
 	 *         {@link CodesProviderFactory}.
 	 */
-	public Tree newTree(Code guess, Set<Code> alreadyGuessed, Set<Code> answers) {
-		Set<Code> guessed = new LinkedHashSet<>(alreadyGuessed);
+	public Tree newTree(Code guess, Set<Code> guessed, Set<Code> answers) {
+		final Set<Code> copyOfGuessed = new LinkedHashSet<>(guessed);
 		Tree root = new Tree(guess);
-		guessed.add(guess);
+		copyOfGuessed.add(guess);
 		
-		/*
-		 * Compare guess to answers, then group the answers by the response they
-		 * yield.
-		 */
+		Map<Response, Set<Code>> answerGroups =
+				groupAnswersByResponseToGuess(answers, guess);
+		
+		answerGroups.forEach((response, answersLeft) -> {
+			if (response.isCorrect())
+				return;
+			
+			if (answersLeft.size() == 1) {
+				root.add(response, createLeafNode(answersLeft));
+			} else {
+				root.add(response,
+						createInteriorNode(guess, copyOfGuessed, answersLeft));
+			}
+		});
+		
+		return root;
+	}
+	
+	private Tree createLeafNode(Collection<Code> answersLeft) {
+		return new Tree(answersLeft.iterator().next());
+	}
+	
+	private Tree createInteriorNode(
+			Code guess,
+			Set<Code> guessed,
+			Set<Code> answersLeft) {
+		Set<Code> nextGuesses = guessProviderFactory
+				.getInstance(guessed, answersLeft)
+				.getCodes();
+		Set<Code> nextAnswers = new LinkedHashSet<>(answersLeft);
+		nextAnswers.remove(guess);
+
+		return findOptimalTree(nextGuesses, guessed, answersLeft);
+	}
+	
+	private Tree findOptimalTree(
+			Collection<Code> guessesRemaining,
+			Set<Code> guessed,
+			Set<Code> answersRemaining) {
+		Iterator<Code> guesses = guessesRemaining.iterator();
+		Tree optimal = newTree(guesses.next(), guessed, answersRemaining);
+		
+		while (guesses.hasNext()) {
+			Tree other = newTree(guesses.next(), guessed, answersRemaining);
+			if (comparator.compare(optimal, other) > 0)
+				optimal = other;
+		}
+		
+		return optimal;
+	}
+	
+	private Map<Response, Set<Code>> groupAnswersByResponseToGuess(
+			Collection<Code> answers,
+			Code guess) {
 		Map<Response, Set<Code>> answerGroups = new HashMap<>();
 		for (Code answer : answers) {
 			Response key = guess.compareTo(answer);
 			answerGroups.putIfAbsent(key, new HashSet<>());
 			answerGroups.get(key).add(answer);
 		}
-		
-		/*
-		 * Build out child nodes
-		 */
-		for (Entry<Response, Set<Code>> group : answerGroups.entrySet()) {
-			Set<Code> answersLeft = group.getValue();
-			
-			if (group.getKey().isCorrect())
-				continue;
-			
-			if (answersLeft.size() == 1) {
-				root.add(group.getKey(),
-						new Tree(answersLeft.iterator().next()));
-			} else {
-				// Compare the possible outcomes and pick the "best" one
-				Tree preferred = null;
-				Set<Code> nextGuesses = guessProviderFactory
-						.getInstance(guessed, answersLeft)
-						.getCodes();
-				for (Code nextGuess : nextGuesses) {
-					Set<Code> nextGuessed = new HashSet<>();
-					nextGuessed.addAll(guessed);
-					Set<Code> nextAnswers = new HashSet<>();
-					nextAnswers.addAll(answersLeft);
-					nextAnswers.remove(guess);
-					Tree next = newTree(nextGuess, nextGuessed, nextAnswers);
-					if (comparator.compare(preferred, next) > 0) {
-						preferred = next;
-					}
-				}
-				root.add(group.getKey(), preferred);
-			}
-		}
-
-		return root;
+		return answerGroups;
 	}
 	
 }
