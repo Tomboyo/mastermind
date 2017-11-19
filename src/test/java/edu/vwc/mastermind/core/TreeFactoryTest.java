@@ -9,6 +9,7 @@ import static org.junit.Assert.*;
 
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.easymock.EasyMockSupport;
@@ -77,10 +78,10 @@ public class TreeFactoryTest extends EasyMockSupport {
 		Code guess = Code.valueOf(0, 1);
 		Set<Code> alreadyGuessed = setOfCodes(guess);
 		Set<Code> answersRemaining = setOfCodes(
-				Code.valueOf(2, 2), Code.valueOf(3, 3));
+				Code.valueOf(3, 3), Code.valueOf(2, 2));
 		
 		expect(providerFactory.getInstance(alreadyGuessed, answersRemaining))
-				.andReturn(() -> new HashSet<>(answersRemaining));
+				.andReturn(() -> new LinkedHashSet<>(answersRemaining));
 		expect(comparator.compare(eq(null), anyObject()))
 				.andReturn(1);
 		expect(comparator.compare(
