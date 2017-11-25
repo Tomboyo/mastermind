@@ -10,11 +10,11 @@ import edu.vwc.mastermind.sequence.Code;
  * Code with a configured number of pegs and colors. There will be colors^pegs
  * total Code instances in the collection.
  */
-class AllCodesProvider implements CodesProvider {
+public class AllCodesProvider implements CodesProvider {
 
 	private Set<Code> codes;
 	
-	AllCodesProvider(int colors, int pegs) {
+	public AllCodesProvider(int colors, int pegs) {
 		generateCodes(colors, pegs);
 	}
 

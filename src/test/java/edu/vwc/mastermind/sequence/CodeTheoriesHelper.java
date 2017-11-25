@@ -11,7 +11,7 @@ import org.junit.experimental.theories.ParameterSupplier;
 import org.junit.experimental.theories.ParametersSuppliedBy;
 import org.junit.experimental.theories.PotentialAssignment;
 
-import edu.vwc.mastermind.sequence.provider.Providers;
+import edu.vwc.mastermind.sequence.provider.AllCodesProvider;
 
 final class CodeTheoriesHelper {
 
@@ -40,7 +40,7 @@ final class CodeTheoriesHelper {
 				for (int colors = annotation.minNumberColors();
 						colors < annotation.maxNumberColors();
 						colors++) {
-					Providers.allCodes(colors, pegs).getCodes().stream()
+					new AllCodesProvider(colors, pegs).getCodes().stream()
 							.map((Code code) -> PotentialAssignment.forValue(
 									code.toString(), code))
 							.forEach(values::add);

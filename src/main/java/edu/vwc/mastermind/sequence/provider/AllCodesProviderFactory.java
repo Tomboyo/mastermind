@@ -16,11 +16,11 @@ import edu.vwc.mastermind.sequence.Code;
  * provided to {@link #getInstance}'s blacklist parameter determines which Codes
  * are filtered. The hint parameter is never used.
  */
-class AllCodesProviderFactory implements CodesProviderFactory {
+public class AllCodesProviderFactory implements CodesProviderFactory {
 	
 	private final CodesProvider provider;
 	
-	AllCodesProviderFactory(CodesProvider provider) {
+	public AllCodesProviderFactory(CodesProvider provider) {
 		this.provider = provider;
 	}
 	
