@@ -65,6 +65,8 @@ public class Main {
 					firstGuesses, allAnswers);
 			System.out.println("Startegy tree maximum turns: " + tree.depth());
 			System.out.println(tree);
+			
+			executor.shutdown();
 		} catch (ExecutionException | InterruptedException e) {
 			System.err.println("Failed to create strategy tree: " + e);
 			e.printStackTrace();
