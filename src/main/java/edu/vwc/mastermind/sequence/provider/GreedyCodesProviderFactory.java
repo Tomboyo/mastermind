@@ -12,12 +12,24 @@ import java.util.stream.IntStream;
 import edu.vwc.mastermind.sequence.Code;
 import edu.vwc.mastermind.sequence.Response;
 
+/**
+ * This code provider strategy emulates that of Donald Knuth. We choose
+ * exactly one code to use as the next guess. We pick the code as the next
+ * guess which guarantees a maximal number of remaining answers will be
+ * eliminated. We prefer to pick codes which are themselves possible answers.
+ * We consider each code from the universe as a candidate.
+ *
+ * This algorithm will guarantee a 5-turn game in 6 colors and 4 pegs using
+ * the starting input [1, 1, 0, 0].
+ */
 public final class GreedyCodesProviderFactory implements CodesProviderFactory {
 
 	private final Collection<Code> universe;
+	private final int sizeOfUniverse;
 	
 	public GreedyCodesProviderFactory(Collection<Code> universe) {
 		this.universe = universe;
+		sizeOfUniverse = universe.size();
 	}
 	
 	@Override
@@ -26,26 +38,29 @@ public final class GreedyCodesProviderFactory implements CodesProviderFactory {
 			Set<Code> answersRemaining) {
 		if (answersRemaining.isEmpty())
 			throw new NoSuchElementException("There are no answers left");
-		
-		Set<Code> remainingGuesses = new LinkedHashSet<Code>(universe);
-		remainingGuesses.removeAll(alreadyGuessed);
-		if (remainingGuesses.isEmpty())
-			throw new NoSuchElementException(
-					"There are no guesses left to make");
-		
-		Iterator<Code> iter = remainingGuesses.iterator();
+
+		if (alreadyGuessed.equals(universe))
+			throw new NoSuchElementException("There are no guesses left");
+
+		Iterator<Code> iter = universe.iterator();
 		Code bestGuess = iter.next();
-		int largestBin = largestBin(getBins(bestGuess, answersRemaining));
-		
+		int bestScore = score(getBins(bestGuess, answersRemaining));
+		boolean guessIsAnswer = answersRemaining.contains(bestGuess);
+
 		while (iter.hasNext()) {
 			Code next = iter.next();
-			int localLargestBin = largestBin(getBins(next, answersRemaining));
-			if (localLargestBin < largestBin) {
-				largestBin = localLargestBin;
+			int score = score(getBins(next, answersRemaining));
+			if (score > bestScore) {
+				bestScore = score;
 				bestGuess = next;
+				guessIsAnswer = answersRemaining.contains(bestGuess);
+			} else if (score == bestScore && !guessIsAnswer) {
+				bestScore = score;
+				bestGuess = next;
+				guessIsAnswer = true;
 			}
 		}
-		
+
 		Set<Code> codes = new LinkedHashSet<>();
 		codes.add(bestGuess);
 		CodesProvider provider = new SimpleCodesProvider(codes);
@@ -66,11 +81,12 @@ public final class GreedyCodesProviderFactory implements CodesProviderFactory {
 		return bins;
 	}
 	
-	private int largestBin(Map<Response, CountingNumber> bins) {
-		return bins.values().stream()
+	private int score(
+			Map<Response, CountingNumber> bins) {
+		return sizeOfUniverse - bins.values().stream()
 				.flatMapToInt(it -> IntStream.of(it.get()))
 				.max()
-				.orElse(0);
+				.orElse(0); // This should not occur
 	}
 	
 	private static class CountingNumber {
