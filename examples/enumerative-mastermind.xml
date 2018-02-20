@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This configuration uses a fully enumerative approach: we try every
+single possible combination of guesses in order to determine which is the
+"best". -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="colors"
+	class="java.lang.Integer">
+		<constructor-arg value="3"/>
+	</bean>
+
+	<bean id="pegs"
+	class="java.lang.Integer">
+		<constructor-arg value="2"/>
+	</bean>
+
+	<bean id="provider"
+	class="edu.vwc.mastermind.sequence.provider.AllCodesProvider">
+		<constructor-arg type="int" ref="colors" />
+		<constructor-arg type="int" ref="pegs" />
+	</bean>
+
+	<bean id="first_guess_provider"
+	class="edu.vwc.mastermind.sequence.provider.SimpleCodesProvider">
+		<constructor-arg index="0" ref="all_answers" />
+	</bean>
+
+	<!-- Set of all Codes to use as first guesses -->
+	<bean id="first_guesses"
+	class="java.util.Set"
+	factory-bean="first_guess_provider"
+	factory-method="getCodes" />
+
+	<!-- Set of all Codes which must be guessed eventually (the answers) -->
+	<bean id="all_answers"
+	class="java.util.Set"
+	factory-bean="provider"
+	factory-method="getCodes" />
+
+	<!-- A Tree comparator that sorts desired strategy trees, where better
+		is "less than" worse. -->
+	<bean id="comparator"
+	class="edu.vwc.mastermind.tree.compare.RequiredTurnsComparator">
+	</bean>
+
+	<!-- Decides what codes to guess after each subsequent guess. This
+	implementation is exhaustive; try everything!-->
+	<bean id="factory"
+	class="edu.vwc.mastermind.sequence.provider.AllCodesProviderFactory">
+		<constructor-arg
+		type="edu.vwc.mastermind.sequence.provider.CodesProvider"
+		ref="provider" />
+	</bean>
+
+	<!-- Defines the threading context in which the strategy tree is generated.
+	-->
+	<bean id="executor"
+	class="java.util.concurrent.Executors"
+	factory-method="newCachedThreadPool" />
+
+</beans>
