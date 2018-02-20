@@ -15,38 +15,38 @@ import edu.vwc.mastermind.tree.Tree;
  */
 public class Controller {
 
-	private final ParallelizedTreeFactory parallelFactory;
-	private final Comparator<Tree> comparator;
+    private final ParallelizedTreeFactory parallelFactory;
+    private final Comparator<Tree> comparator;
 
-	public Controller(
-			ParallelizedTreeFactory factory,
-			Comparator<Tree> comparator) {
-		this.parallelFactory = factory;
-		this.comparator = comparator;
-	}
-	
-	/**
-	 * Builds a Mastermind strategy tree. Note that repeated calls to this method
-	 * can return different Tree structures, but all such Trees should be
-	 * considered equivalent by the Comparator.
-	 */
-	public Tree newOptimizedStrategyTree(
-			Collection<Code> guesses,
-			Set<Code> answers)
-			throws ExecutionException, InterruptedException {
-		Set<Code> alreadyGuessed = new HashSet<>();
-		
-		guesses.forEach(guess -> parallelFactory.submitGuess(
-				guess, alreadyGuessed, answers));
-		
-		Tree bestResult = parallelFactory.next();
-		while (parallelFactory.hasNext()) {
-			Tree result = parallelFactory.next();
-			if (comparator.compare(result, bestResult) < 0)
-				bestResult = result;
-		}
-		
-		return bestResult;
-	}
-	
+    public Controller(
+            ParallelizedTreeFactory factory,
+            Comparator<Tree> comparator) {
+        this.parallelFactory = factory;
+        this.comparator = comparator;
+    }
+
+    /**
+     * Builds a Mastermind strategy tree. Note that repeated calls to this method
+     * can return different Tree structures, but all such Trees should be
+     * considered equivalent by the Comparator.
+     */
+    public Tree newOptimizedStrategyTree(
+            Collection<Code> guesses,
+            Set<Code> answers)
+            throws ExecutionException, InterruptedException {
+        Set<Code> alreadyGuessed = new HashSet<>();
+
+        guesses.forEach(guess -> parallelFactory.submitGuess(
+                guess, alreadyGuessed, answers));
+
+        Tree bestResult = parallelFactory.next();
+        while (parallelFactory.hasNext()) {
+            Tree result = parallelFactory.next();
+            if (comparator.compare(result, bestResult) < 0)
+                bestResult = result;
+        }
+
+        return bestResult;
+    }
+
 }

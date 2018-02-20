@@ -24,90 +24,90 @@ import edu.vwc.mastermind.sequence.Response;
  */
 public final class GreedyCodesProviderFactory implements CodesProviderFactory {
 
-	private final Collection<Code> universe;
-	private final int sizeOfUniverse;
-	
-	public GreedyCodesProviderFactory(Collection<Code> universe) {
-		this.universe = universe;
-		sizeOfUniverse = universe.size();
-	}
-	
-	@Override
-	public CodesProvider getInstance(
-			Set<Code> alreadyGuessed,
-			Set<Code> answersRemaining) {
-		if (answersRemaining.isEmpty())
-			throw new NoSuchElementException("There are no answers left");
+    private final Collection<Code> universe;
+    private final int sizeOfUniverse;
 
-		if (alreadyGuessed.equals(universe))
-			throw new NoSuchElementException("There are no guesses left");
+    public GreedyCodesProviderFactory(Collection<Code> universe) {
+        this.universe = universe;
+        sizeOfUniverse = universe.size();
+    }
 
-		Iterator<Code> iter = universe.iterator();
-		Code bestGuess = iter.next();
-		int bestScore = score(getBins(bestGuess, answersRemaining));
-		boolean guessIsAnswer = answersRemaining.contains(bestGuess);
+    @Override
+    public CodesProvider getInstance(
+            Set<Code> alreadyGuessed,
+            Set<Code> answersRemaining) {
+        if (answersRemaining.isEmpty())
+            throw new NoSuchElementException("There are no answers left");
 
-		while (iter.hasNext()) {
-			Code next = iter.next();
-			int score = score(getBins(next, answersRemaining));
-			if (score > bestScore) {
-				bestScore = score;
-				bestGuess = next;
-				guessIsAnswer = answersRemaining.contains(bestGuess);
-			} else if (score == bestScore && !guessIsAnswer) {
-				bestScore = score;
-				bestGuess = next;
-				guessIsAnswer = true;
-			}
-		}
+        if (alreadyGuessed.equals(universe))
+            throw new NoSuchElementException("There are no guesses left");
 
-		Set<Code> codes = new LinkedHashSet<>();
-		codes.add(bestGuess);
-		CodesProvider provider = new SimpleCodesProvider(codes);
-		return provider;
-	}
-	
-	private Map<Response, CountingNumber> getBins(
-			Code guess, Collection<Code> answers) {
-		Map<Response, CountingNumber> bins = new HashMap<>();
-		
-		for (Code answer : answers) {
-			Response key = guess.compareTo(answer);
-			CountingNumber size = bins.putIfAbsent(key, new CountingNumber(1));
-			if (size != null)
-				size.increment();
-		};
-		
-		return bins;
-	}
-	
-	private int score(
-			Map<Response, CountingNumber> bins) {
-		return sizeOfUniverse - bins.values().stream()
-				.flatMapToInt(it -> IntStream.of(it.get()))
-				.max()
-				.orElse(0); // This should not occur
-	}
-	
-	private static class CountingNumber {
-		private int value;
-		
-		public CountingNumber(int initialValue) {
-			value = initialValue;
-		}
-		
-		public void increment() {
-			value += 1;
-		}
-		
-		public int get() {
-			return value;
-		}
-		
-		@Override
-		public String toString() {
-			return String.valueOf(value);
-		}
-	}
+        Iterator<Code> iter = universe.iterator();
+        Code bestGuess = iter.next();
+        int bestScore = score(getBins(bestGuess, answersRemaining));
+        boolean guessIsAnswer = answersRemaining.contains(bestGuess);
+
+        while (iter.hasNext()) {
+            Code next = iter.next();
+            int score = score(getBins(next, answersRemaining));
+            if (score > bestScore) {
+                bestScore = score;
+                bestGuess = next;
+                guessIsAnswer = answersRemaining.contains(bestGuess);
+            } else if (score == bestScore && !guessIsAnswer) {
+                bestScore = score;
+                bestGuess = next;
+                guessIsAnswer = true;
+            }
+        }
+
+        Set<Code> codes = new LinkedHashSet<>();
+        codes.add(bestGuess);
+        CodesProvider provider = new SimpleCodesProvider(codes);
+        return provider;
+    }
+
+    private Map<Response, CountingNumber> getBins(
+            Code guess, Collection<Code> answers) {
+        Map<Response, CountingNumber> bins = new HashMap<>();
+
+        for (Code answer : answers) {
+            Response key = guess.compareTo(answer);
+            CountingNumber size = bins.putIfAbsent(key, new CountingNumber(1));
+            if (size != null)
+                size.increment();
+        };
+
+        return bins;
+    }
+
+    private int score(
+            Map<Response, CountingNumber> bins) {
+        return sizeOfUniverse - bins.values().stream()
+                .flatMapToInt(it -> IntStream.of(it.get()))
+                .max()
+                .orElse(0); // This should not occur
+    }
+
+    private static class CountingNumber {
+        private int value;
+
+        public CountingNumber(int initialValue) {
+            value = initialValue;
+        }
+
+        public void increment() {
+            value += 1;
+        }
+
+        public int get() {
+            return value;
+        }
+
+        @Override
+        public String toString() {
+            return String.valueOf(value);
+        }
+    }
 
 }

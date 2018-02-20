@@ -9,11 +9,11 @@ import edu.vwc.mastermind.sequence.Code;
  */
 public interface CodesProvider {
 
-	/**
-	 * Get a set of Codes.
-	 * 
-	 * @return A set of Codes
-	 */	
-	Set<Code> getCodes();
+    /**
+     * Get a set of Codes.
+     *
+     * @return A set of Codes
+     */
+    Set<Code> getCodes();
 
 }

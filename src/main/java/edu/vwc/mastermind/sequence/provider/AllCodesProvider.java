@@ -12,48 +12,48 @@ import edu.vwc.mastermind.sequence.Code;
  */
 public class AllCodesProvider implements CodesProvider {
 
-	private Set<Code> codes;
-	
-	public AllCodesProvider(int colors, int pegs) {
-		generateCodes(colors, pegs);
-	}
+    private Set<Code> codes;
 
-	@Override
-	public Set<Code> getCodes() {
-		return codes;
-	}
-	
-	private void generateCodes(int colors, int pegs) {
-		int numCodes = (int) Math.pow(colors,  pegs);
-		// See https://stackoverflow.com/questions/7115445/what-is-the-optimal-capacity-and-load-factor-for-a-fixed-size-hashmap
-		// We know the precise size, so this seems appropriate.
-		codes = new LinkedHashSet<>(numCodes, 1);
+    public AllCodesProvider(int colors, int pegs) {
+        generateCodes(colors, pegs);
+    }
 
-		// Tracker holds the code we are generating.
-		// We treat its 'pegs' like base-<colors> numbers.
-		int[] tracker = new int[pegs];
-		int max_digit = colors - 1;
+    @Override
+    public Set<Code> getCodes() {
+        return codes;
+    }
 
-		for (int i = 0; i < numCodes; i++) {
-			codes.add(Code.valueOf(tracker));
-			
-			// Increment the 0th digit
-			tracker[0] ++;
+    private void generateCodes(int colors, int pegs) {
+        int numCodes = (int) Math.pow(colors,  pegs);
+        // See https://stackoverflow.com/questions/7115445/what-is-the-optimal-capacity-and-load-factor-for-a-fixed-size-hashmap
+        // We know the precise size, so this seems appropriate.
+        codes = new LinkedHashSet<>(numCodes, 1);
 
-			// Perform carry operation. Stop if the tracker holds its maximum value
-			int carry_index = 0;
-			while (tracker[carry_index] > max_digit) {
-				tracker[carry_index] = 0;
-				carry_index ++;
+        // Tracker holds the code we are generating.
+        // We treat its 'pegs' like base-<colors> numbers.
+        int[] tracker = new int[pegs];
+        int max_digit = colors - 1;
 
-				// Unsigned overflow (carry)
-				if (carry_index == pegs) {
-					break;
-				}
+        for (int i = 0; i < numCodes; i++) {
+            codes.add(Code.valueOf(tracker));
 
-				tracker[carry_index] ++;
-			}
-		}
-	}
+            // Increment the 0th digit
+            tracker[0] ++;
+
+            // Perform carry operation. Stop if the tracker holds its maximum value
+            int carry_index = 0;
+            while (tracker[carry_index] > max_digit) {
+                tracker[carry_index] = 0;
+                carry_index ++;
+
+                // Unsigned overflow (carry)
+                if (carry_index == pegs) {
+                    break;
+                }
+
+                tracker[carry_index] ++;
+            }
+        }
+    }
 
 }

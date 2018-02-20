@@ -17,21 +17,21 @@ import edu.vwc.mastermind.sequence.Code;
  * are filtered. The hint parameter is never used.
  */
 public class AllCodesProviderFactory implements CodesProviderFactory {
-	
-	private final CodesProvider provider;
-	
-	public AllCodesProviderFactory(CodesProvider provider) {
-		this.provider = provider;
-	}
-	
-	@Override
-	public CodesProvider getInstance(Set<Code> blackList, Set<Code> hint) {
-		final Set<Code> codes = new LinkedHashSet<>(provider.getCodes()); 
-		for (Code code : blackList) {
-			codes.remove(code);
-		}
-		
-		return new SimpleCodesProvider(codes);
-	}
+
+    private final CodesProvider provider;
+
+    public AllCodesProviderFactory(CodesProvider provider) {
+        this.provider = provider;
+    }
+
+    @Override
+    public CodesProvider getInstance(Set<Code> blackList, Set<Code> hint) {
+        final Set<Code> codes = new LinkedHashSet<>(provider.getCodes());
+        for (Code code : blackList) {
+            codes.remove(code);
+        }
+
+        return new SimpleCodesProvider(codes);
+    }
 
 }

@@ -10,15 +10,15 @@ import edu.vwc.mastermind.sequence.Code;
  */
 public class SimpleCodesProvider implements CodesProvider {
 
-	private final Set<Code> codes;
-	
-	public SimpleCodesProvider(Set<Code> codes) {
-		this.codes = codes;
-	}
-	
-	@Override
-	public Set<Code> getCodes() {
-		return codes;
-	}
+    private final Set<Code> codes;
+
+    public SimpleCodesProvider(Set<Code> codes) {
+        this.codes = codes;
+    }
+
+    @Override
+    public Set<Code> getCodes() {
+        return codes;
+    }
 
 }
